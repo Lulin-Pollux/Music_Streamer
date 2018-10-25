@@ -68,6 +68,10 @@ int fileReceive(SOCKET sock, char *received_fileName, float *received_fileSize);
 //설정파일을 불러오는 함수
 int importSettings(SETTINGS *setUp);
 
+//파일의 절대경로와 이름을 넘겨주는 함수
+int GetFilePath(char *filePath, int filePath_len, char *fileName);
+
+
 /* Console.c 의 함수 목록
 --------------------------------------------*/
 //입력 버퍼를 비워준다.

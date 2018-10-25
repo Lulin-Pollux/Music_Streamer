@@ -142,3 +142,37 @@ int importSettings(SETTINGS *setUp)
 
 	return 0;
 }
+
+//파일의 절대경로와 이름을 넘겨주는 함수
+int GetFilePath(char *filePath, int filePath_len, char *fileName)
+{
+	int retval;
+	char buffer[256];
+	
+	//파일명 입력받기
+	printf("파일명 또는 경로를 입력하세요. \n");
+	printf(">>> ");
+	gets_s(buffer, sizeof(buffer));
+
+	//파일이 존재하는지 검사한다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, buffer, "r");
+	if (retval != 0)
+		return 1;
+	else
+		fclose(rfp);
+
+	//파일의 절대경로를 가져온다.
+	char rowPath[1000];
+	GetFullPathName(buffer, sizeof(rowPath), rowPath, NULL);
+
+	//파일의 이름을 가져와서 넘겨준다.
+	strcpy_s(fileName, 256, strrchr(rowPath, '\\') + 1);
+
+	//파일 이름을 뺀 절대경로를 넘겨준다.
+	char *len = strrchr(rowPath, '\\');
+	*len = '\0';
+	strcpy_s(filePath, filePath_len, rowPath);
+
+	return 0;
+}

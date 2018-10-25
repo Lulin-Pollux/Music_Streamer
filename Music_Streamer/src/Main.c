@@ -13,7 +13,7 @@ int main()
 	setScreenBufferSize(90, 9000);
 
 	int retval;
-
+	
 	retval = importSettings(&setUp);
 	if (retval == 1)
 	{
