@@ -84,6 +84,12 @@ int getFilePathName(char *filePath, int filePath_len, char *fileName);
 
 /* Player.c 의 함수 목록
 --------------------------------------------*/
+//재생목록을 초기화하는 함수
+int initializePlayList();
+
+//재생목록을 넘겨주는 함수
+int getPlayList(char buffer[][256], int *eol);
+
 int player(char *fileName);
 
 

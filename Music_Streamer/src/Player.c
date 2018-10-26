@@ -9,7 +9,6 @@ int player(char *filePath)
 	int retval;
 	MCI_OPEN_PARMS mciOpen;  //장치 드라이버를 열 때 보고서
 	MCI_PLAY_PARMS mciPlay;  //재생할 때 보고서
-	MCI_STATUS_PARMS mciStatus;  //상태 보고서
 	DWORD deviceID;  //장치 드라이버 ID 저장
 	char fileName[256];  //오디오 파일의 이름 저장
 

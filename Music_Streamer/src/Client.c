@@ -5,11 +5,12 @@
 #include <WinSock2.h>
 #include "ClassLinker.h"
 
-#define SERVER_PORT 50000
+#define STREAMING_PORT 50000
 
 int client(SETTINGS *setUp)
 {
 	int retval;
+	char buffer[100];
 
 	//윈속 초기화
 	WSADATA wsa;
@@ -17,19 +18,18 @@ int client(SETTINGS *setUp)
 
 	//서버와 통신할 소켓 생성
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-	SOCKADDR_IN server_addr;
-	ZeroMemory(&server_addr, sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = inet_addr(setUp->server_ip);
-	server_addr.sin_port = htons(SERVER_PORT);
+	SOCKADDR_IN serveraddr;
+	ZeroMemory(&serveraddr, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = inet_addr(setUp->server_ip);
+	serveraddr.sin_port = htons(STREAMING_PORT);
 
 	//서버에 접속하기
-	retval = connect(sock, (SOCKADDR *)&server_addr, sizeof(server_addr));
+	retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
 		err_quit("connect()");
 	else
 		printf("서버와 연결되었습니다. \n\n");
-
 
 	//파일이 저장될 디렉토리를 설정하고 파일 이름, 크기를 받아올 변수를 선언한다.
 	char save_directory[100];
@@ -37,14 +37,22 @@ int client(SETTINGS *setUp)
 	char fileName[256];
 	float fileSize = 0.0f;
 
-	//파일을 수신한다.
-	retval = fileReceive(sock, save_directory, fileName, &fileSize);
-	if (retval == 0)
-		printf("'%s' 수신 완료! (%0.2fMB) \n\n", fileName, fileSize);
-	else if (retval == 1)
+	//클라이언트가 받을 파일 개수를 수신한다.
+	int fileCount = 0;
+	recv(sock, buffer, 2, MSG_WAITALL);
+	fileCount = atoi(buffer);
+
+	for (int i = 1; i <= fileCount; i++)
 	{
-		printf("'%s' 수신 실패! \n\n", fileName);
-		return 1;
+		//파일을 수신한다.
+		retval = fileReceive(sock, save_directory, fileName, &fileSize);
+		if (retval == 0)
+			printf("'%s' 수신 완료! (%0.2fMB) \n\n", fileName, fileSize);
+		else if (retval == 1)
+		{
+			printf("'%s' 수신 실패! \n\n", fileName);
+			return 1;
+		}
 	}
 
 	//서버와 연결을 종료한다.
