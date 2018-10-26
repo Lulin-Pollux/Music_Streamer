@@ -7,7 +7,6 @@
 
 #define SERVER_PORT 50000
 
-
 int server()
 {
 	int retval;

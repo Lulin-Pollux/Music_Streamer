@@ -32,13 +32,13 @@ int client(SETTINGS *setUp)
 
 
 	//파일이 저장될 디렉토리를 설정하고 파일 이름, 크기를 받아올 변수를 선언한다.
-	char receive_directory[100];
-	strcpy_s(receive_directory, sizeof(receive_directory), ".\\playQue");
+	char save_directory[100];
+	strcpy_s(save_directory, sizeof(save_directory), ".\\playQue");
 	char fileName[256];
 	float fileSize = 0.0f;
 
 	//파일을 수신한다.
-	retval = fileReceive(sock, receive_directory, fileName, &fileSize);
+	retval = fileReceive(sock, save_directory, fileName, &fileSize);
 	if (retval == 0)
 		printf("'%s' 수신 완료! (%0.2fMB) \n\n", fileName, fileSize);
 	else if (retval == 1)
