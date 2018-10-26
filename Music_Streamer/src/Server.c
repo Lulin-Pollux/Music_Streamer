@@ -49,27 +49,25 @@ int server()
 	printf("클라이언트가 접속하였습니다. \n");
 	printf("주소= %s:%d \n\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
-	//파일의 경로와 이름을 가져온다.
-	char filePath[1000];  //오디오 파일의 경로 저장
+	//파일의 이름과 경로를 설정한다.
 	char fileName[256];  //오디오 파일의 이름 저장
-	retval = GetFilePath(filePath, sizeof(filePath), fileName);
-	if (retval == 1)
-	{
-		printf("해당 파일명의 파일이 없습니다. \n");
-		return 1;
-	}
-
-	//파일이 위치한 디렉토리로 이동한다.
-	SetCurrentDirectory(filePath);
+	char filePath[1000];  //오디오 파일의 경로 저장
+	strcpy_s(filePath, sizeof(filePath), ".\\playQue\\");
+	strcpy_s(fileName, sizeof(fileName), "1.mp3");
+	strcat_s(filePath, sizeof(filePath), fileName);
 
 	//파일을 송신한다.
-	if (fileSend(client_sock, fileName) == 0)
-		printf("'%s' 송신 성공! \n\n", fileName);
+	retval = fileSend(client_sock, fileName, filePath);
+	if (retval == 0)
+	{
+		printf("'%s' 송신 성공! \n", fileName);
+		printf("주소= %s:%d \n\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+	}
 
 	//연결 종료
 	closesocket(client_sock);
 
-
+	//----------------------------------------
 	printf("서버를 종료합니다. \n");
 	closesocket(listen_sock);
 	WSACleanup();

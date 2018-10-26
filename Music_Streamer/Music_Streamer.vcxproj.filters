@@ -33,6 +33,9 @@
     <ClCompile Include="src\Console.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="src\Player.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassLinker.h">

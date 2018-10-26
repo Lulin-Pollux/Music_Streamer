@@ -38,38 +38,9 @@ typedef struct settings
 /*--------------------------------------------------------------------*/
 
 
-/* Server.c 의 함수 목록
---------------------------------------------*/
-int server();
-
-
 /* Client.c 의 함수 목록
 --------------------------------------------*/
 int client(SETTINGS *setUp);
-
-
-/* Error.c 의 함수 목록 
---------------------------------------------*/
-// 소켓 함수 오류 출력 후 종료
-void err_quit(char *msg);
-
-// 소켓 함수 오류 출력
-void err_display(char *msg);
-
-
-/* File.c 의 함수 목록
---------------------------------------------*/
-//파일을 송신하는 함수
-int fileSend(SOCKET sock, _In_ char *fileName);
-
-//파일을 수신하는 함수
-int fileReceive(SOCKET sock, char *received_fileName, float *received_fileSize);
-
-//설정파일을 불러오는 함수
-int importSettings(SETTINGS *setUp);
-
-//파일의 절대경로와 이름을 넘겨주는 함수
-int GetFilePath(char *filePath, int filePath_len, char *fileName);
 
 
 /* Console.c 의 함수 목록
@@ -85,3 +56,37 @@ int setCursorPos(short x, short y);
 
 //화면 버퍼 크기를 설정한다.
 int setScreenBufferSize(short x, short y);
+
+
+/* Error.c 의 함수 목록
+--------------------------------------------*/
+// 소켓 함수 오류 출력 후 종료
+void err_quit(char *msg);
+
+// 소켓 함수 오류 출력
+void err_display(char *msg);
+
+
+/* File.c 의 함수 목록
+--------------------------------------------*/
+//파일을 송신하는 함수
+int fileSend(SOCKET sock, _In_ char *fileName, _In_ char *filePath);
+
+//파일을 수신하는 함수
+int fileReceive(SOCKET sock, char *save_directory, _Out_ char *saved_fileName, _Out_ float *saved_fileSize);
+
+//설정파일을 불러오는 함수
+int importSettings(SETTINGS *setUp);
+
+//파일의 절대경로와 이름을 넘겨주는 함수
+int getFilePathName(char *filePath, int filePath_len, char *fileName);
+
+
+/* Player.c 의 함수 목록
+--------------------------------------------*/
+int player(char *fileName);
+
+
+/* Server.c 의 함수 목록
+--------------------------------------------*/
+int server();
