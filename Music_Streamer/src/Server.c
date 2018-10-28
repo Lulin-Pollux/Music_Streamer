@@ -5,51 +5,9 @@
 #include <WinSock2.h>
 #include "ClassLinker.h"
 
-#define STREAMING_PORT 50000
-
-//재생목록을 초기화하는 함수
-int initializePlaylist(char playlist[][512])
-{
-	int retval;
-	char buffer[512];
-
-	//초기 재생목록 파일을 읽기모드로 연다.
-	FILE *rfp;
-	retval = fopen_s(&rfp, "./playQue/초기 재생목록.txt", "r");
-	if (retval != 0)
-	{
-		perror("초기 재생목록 파일fopen_s()");
-		return 1;
-	}
-
-	//초기 재생목록 파일을 읽어온다.
-	int i = 1;
-	while (!feof(rfp))
-	{
-		fgets(buffer, 512, rfp);
-		if (strncmp(buffer, "//", 2) == 0)  //주석문 읽기안함
-			continue;
-		else if (strcmp(buffer, "\n") == 0)  //Enter 읽기안함
-			continue;
-		else
-		{
-			//'\n'문자 제거
-			int len = (int)strlen(buffer);
-			if (buffer[len - 1] == '\n')
-				buffer[len - 1] = '\0';
-
-			strcpy_s(playlist[i], 512, "./playQue/");
-			strcat_s(playlist[i], 512, buffer);
-		}
-		i++;
-	}
-
-	fclose(rfp);
-	return 0;
-}
 
 //서버 메인 함수
-int server()
+int server(SETTINGS sets)
 {
 	int retval;
 
@@ -67,7 +25,7 @@ int server()
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serveraddr.sin_port = htons(STREAMING_PORT);
+	serveraddr.sin_port = htons(sets.server_mainPort);
 	retval = bind(listen_sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
 		err_quit("bind()");
@@ -90,9 +48,11 @@ int server()
 		if (client_sock == INVALID_SOCKET)
 			err_display("accept()");
 
+		//클라이언트가 접속할 경우, 클라이언트의 아이디와 닉네임을 수신한다.
+		// 함수 ~~~~~
+
 		//접속한 클라이언트의 정보 출력
 		printf("클라이언트가 접속하였습니다. \n");
-		printf("주소= %s:%d \n\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 		//----------------------------------------------------------------------
 		//재생목록을 만든다. 재생목록 배열은 100 * 512이다.

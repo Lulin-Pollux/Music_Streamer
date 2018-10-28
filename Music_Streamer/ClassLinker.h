@@ -12,10 +12,14 @@
 //프로그램의 설정을 저장할 구조체
 typedef struct settings
 {
-	char execute_mode[10];  //프로그램의 시작모드를 정함
-	char server_ip[16];  //서버의 IP를 저장
-	unsigned int uid;  //각 프로그램의 기본 키
-	char nickName[100];  //사용자의 닉네임
+	char execute_mode[7];		//프로그램의 시작모드
+	char server_ip[16];			//서버의 IP 주소
+	int server_mainPort;		//서버의 주 포트
+	int server_requestPort;		//서버의 풀리퀘 포트
+	int server_uid;				//서버의 아이디
+	char server_nickName[50];	//서버의 닉네임
+	int client_uid;				//클라이언트의 아이디
+	char client_nickName[50];	//클라이언트의 닉네임
 }SETTINGS;
 
 //글자색 변경할 때 숫자 대신 사용
@@ -40,7 +44,7 @@ typedef struct settings
 
 /* Client.c 의 함수 목록
 --------------------------------------------*/
-int client(SETTINGS *setUp);
+int client(SETTINGS sets);
 
 
 /* Console.c 의 함수 목록
@@ -82,7 +86,10 @@ int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvByte);
 int recvFullPlayList(SOCKET sock, char playList[][512]);
 
 //설정파일을 불러오는 함수
-int importSettings(SETTINGS *setUp);
+int importSettings(SETTINGS *sets);
+
+//재생목록을 초기화하는 함수
+int initializePlaylist(char playlist[][512]);
 
 
 /* Player.c 의 함수 목록
@@ -92,7 +99,4 @@ int player(char *fileName);
 
 /* Server.c 의 함수 목록
 --------------------------------------------*/
-//재생목록을 초기화하는 함수
-int initializePlaylist(char playlist[][512]);
-
-int server();
+int server(SETTINGS sets);

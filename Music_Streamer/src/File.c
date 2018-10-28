@@ -161,51 +161,111 @@ int recvFullPlayList(SOCKET sock, char playList[][512])
 }
 
 //설정파일을 불러오는 함수
-int importSettings(SETTINGS *setUp)
+int importSettings(SETTINGS *sets)
 {
 	int retval;
+	char buffer[256];
 
-	FILE *ini_rfp;
-	retval = fopen_s(&ini_rfp, "Settings.ini", "r");
+	//설정파일을 읽기모드로 연다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, "Settings.ini", "r");
 	if (retval != 0)
-		return 1;
-	else
 	{
-		char buffer[10][100];  //버퍼
-		char value[30];  //설정값
+		perror("설정파일 열기fopen_s()");
+		return 1;
+	}
 
-		int i = 0;
-		while (!feof(ini_rfp))
+	//설정파일을 읽어온다.
+	while (!feof(rfp))
+	{
+		//한 줄씩 파일을 읽어온다.
+		fgets(buffer, sizeof(buffer), rfp);
+
+		//예외사항을 적어둔다.
+		if (strncmp(buffer, "//", 2) == 0)  //주석문 읽기안함
+			continue;
+		else if (strcmp(buffer, "\n") == 0)  //Enter 읽기안함
+			continue;
+		else if (strncmp(buffer, " ", 1) == 0)  //맨 앞이 공백인 문장 읽기안함
+			continue;
+
+		else
 		{
-			//한 줄씩 파일을 읽어온다.
-			fgets(buffer[i], 100, ini_rfp);
-			if ((strncmp(buffer[i], "//", 2) == 0) || (strchr(buffer[i], '=') == NULL))
+			//'\n'문자 제거
+			int len = (int)strlen(buffer);
+			if (buffer[len - 1] == '\n')
+				buffer[len - 1] = '\0';
+
+			//'='문자 위치를 저장한다.
+			//만약, 값이 없으면 읽지않는다.
+			char *pos = strchr(buffer, '=');
+			if (strcmp(pos + 1, "\0") == 0)
 				continue;
 
-			//'\n'문자 제거
-			int len = (int)strlen(buffer[i]);
-			if (buffer[i][len - 1] == '\n')
-				buffer[i][len - 1] = '\0';
-			i++;
-		}
-
-		for (int k = 0; k < i; k++)
-		{
-			//버퍼에서 값 가져오기
-			char *pos = strchr(buffer[k], '=');
-			strcpy_s(value, sizeof(value), pos + 1);
-
-			//설정 항목들을 setUp객체에 각각 저장한다.
-			if (strncmp(buffer[k], "execute_mode", pos - buffer[k]) == 0)
-				strcpy_s(setUp->execute_mode, sizeof(setUp->execute_mode), value);
-			else if (strncmp(buffer[k], "server_ip", pos - buffer[k]) == 0)
-				strcpy_s(setUp->server_ip, sizeof(setUp->server_ip), value);
-			else if (strncmp(buffer[k], "uid", pos - buffer[k]) == 0)
-				setUp->uid = atoi(value + 1);
-			else if (strncmp(buffer[k], "nickName", pos - buffer[k]) == 0)
-				strcpy_s(setUp->nickName, sizeof(setUp->nickName), value);
+			//설정 항목들을 sets객체에 각각 저장한다.
+			//설정 항목은 if문에 적어둔다.
+			//-------------------------------------------------------------------------
+			if (strncmp(buffer, "execute_mode", pos - buffer) == 0)
+				strcpy_s(sets->execute_mode, sizeof(sets->execute_mode), pos + 1);
+			else if (strncmp(buffer, "server_ip", pos - buffer) == 0)
+				strcpy_s(sets->server_ip, sizeof(sets->server_ip), pos + 1);
+			else if (strncmp(buffer, "server_mainPort", pos - buffer) == 0)
+				sets->server_mainPort = atoi(pos + 1);
+			else if (strncmp(buffer, "server_requestPort", pos - buffer) == 0)
+				sets->server_requestPort = atoi(pos + 1);
+			else if (strncmp(buffer, "server_uid", pos - buffer) == 0)
+				sets->server_uid = atoi(pos + 1);
+			else if (strncmp(buffer, "server_nickName", pos - buffer) == 0)
+				strcpy_s(sets->server_nickName, sizeof(sets->server_nickName), pos + 1);
+			else if (strncmp(buffer, "client_uid", pos - buffer) == 0)
+				sets->client_uid = atoi(pos + 1);
+			else if (strncmp(buffer, "client_nickName", pos - buffer) == 0)
+				strcpy_s(sets->client_nickName, sizeof(sets->client_nickName), pos + 1);
+			//-------------------------------------------------------------------------
 		}
 	}
 
+	fclose(rfp);
+	return 0;
+}
+
+//재생목록을 초기화하는 함수
+int initializePlaylist(char playlist[][512])
+{
+	int retval;
+	char buffer[512];
+
+	//초기 재생목록 파일을 읽기모드로 연다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, "./playQue/초기 재생목록.txt", "r");
+	if (retval != 0)
+	{
+		perror("초기 재생목록 파일fopen_s()");
+		return 1;
+	}
+
+	//초기 재생목록 파일을 읽어온다.
+	int i = 1;
+	while (!feof(rfp))
+	{
+		fgets(buffer, 512, rfp);
+		if (strncmp(buffer, "//", 2) == 0)  //주석문 읽기안함
+			continue;
+		else if (strcmp(buffer, "\n") == 0)  //Enter 읽기안함
+			continue;
+		else
+		{
+			//'\n'문자 제거
+			int len = (int)strlen(buffer);
+			if (buffer[len - 1] == '\n')
+				buffer[len - 1] = '\0';
+
+			strcpy_s(playlist[i], 512, "./playQue/");
+			strcat_s(playlist[i], 512, buffer);
+		}
+		i++;
+	}
+
+	fclose(rfp);
 	return 0;
 }

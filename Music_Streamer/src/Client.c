@@ -5,9 +5,8 @@
 #include <WinSock2.h>
 #include "ClassLinker.h"
 
-#define STREAMING_PORT 50000
 
-int client(SETTINGS *setUp)
+int client(SETTINGS sets)
 {
 	int retval;
 
@@ -24,15 +23,16 @@ int client(SETTINGS *setUp)
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(setUp->server_ip);
-	serveraddr.sin_port = htons(STREAMING_PORT);
+	serveraddr.sin_addr.s_addr = inet_addr(sets.server_ip);
+	serveraddr.sin_port = htons(sets.server_mainPort);
 
 	//서버에 접속하기
+	printf("서버와 연결 중입니다. \n\n");
 	retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
 		err_quit("connect()");
 	else
-		printf("서버와 연결되었습니다. \n\n");
+		printf("서버와 연결되었습니다. \n");
 
 	//-------------------------------------------------------------------------------------
 	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
