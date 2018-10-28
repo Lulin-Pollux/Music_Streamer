@@ -5,104 +5,159 @@
 #include "ClassLinker.h"
 
 
-//파일을 송신하는 함수
-int fileSend(SOCKET sock, _In_ char *fileName, _In_ char *filePath)
+//파일 송신 함수 (경로는 최대 512바이트)
+int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendByte)
 {
+	/* 파일 송신 프로토콜
+	1. 파일 경로를 전송한다.
+	2. 파일 크기를 전송한다.
+	3. 파일 데이터를 전송한다. */
+
 	int retval;
 
-	//파일 이름 보내기(256바이트 고정 길이)
-	retval = send(sock, fileName, sizeof(fileName), 0);
+	//1. 파일 경로를 전송한다. (512바이트 고정 길이)
+	retval = send(sock, filePath, 512, 0);
 	if (retval == SOCKET_ERROR)
-	{
-		err_display("send()");
-		return 1;
-	}
+		err_quit("파일 이름send()");
 
-	//전송할 파일을 연다.
+	//1-1. 보낼 파일을 연다.
 	HANDLE hFile = CreateFileA(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) {
-		printf("CreateFile() 오류! \n");
-		return 1;
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		fprintf(stderr, "파일 열기 CreateFile() 오류.\n");
+		system("pause");
+		exit(1);
 	}
 
-	//TransmitFile() 함수로 데이터를 전송한다.
+	//2. 파일 크기를 전송한다. (4바이트 고정 길이)
+	unsigned int fileSize = GetFileSize(hFile, NULL);
+	retval = send(sock, (char*)&fileSize, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+		err_quit("파일 크기send()");
+
+	//3. 파일 데이터를 전송한다. (가변 길이)
 	retval = TransmitFile(sock, hFile, 0, 0, NULL, NULL, 0);
-	if (retval != TRUE) {
-		printf("TransmitFile() 오류! \n");
-		return 1;
+	if (retval == FALSE)
+	{
+		fprintf(stderr, "파일 데이터 전송 TransmitFile() 오류.\n");
+		system("pause");
+		exit(1);
 	}
 
-	//전송했던 파일을 닫는다.
-	DeleteFileA(fileName);
-	CloseHandle(hFile);
+	//전송 결과 내보내기
+	*sendByte = fileSize;
+
 	return 0;
 }
 
-//파일을 수신하는 함수
-int fileReceive(SOCKET sock, _In_ char *save_directory, _Out_ char *saved_fileName, _Out_ float *saved_fileSize)
+//재생목록에 있는 모든 파일 전송 함수
+int sendFullPlaylist(SOCKET sock, char playlist[][512])
 {
-	char *buffer = (char*)malloc(sizeof(char) * (8192 * 1024));
 	int retval;
 
-	//파일 이름 받기(256바이트 고정 길이)
-	char fileName[256];
-	retval = recv(sock, fileName, 256, MSG_WAITALL);
+	//재생목록을 전송한다. (51200바이트 고정 길이)
+	retval = send(sock, playlist[0], 51200, 0);
 	if (retval == SOCKET_ERROR)
 	{
-		err_display("fileName_recv()");
-		return 2;
-	}
-
-	char save[500];
-	strcpy_s(save, sizeof(save), save_directory);
-	strcat_s(save, sizeof(save), "\\");
-	strcat_s(save, sizeof(save), fileName);
-
-	//쓰기용 파일 열기 (없으면 생성, 있으면 덮어씌움)
-	FILE *wfp;
-	fopen_s(&wfp, save, "wb");
-	if (wfp == NULL)
-	{
-		perror("fopen_s()");
-		return 2;
-	}
-
-	//파일 데이터 받기
-	int totalBytes = 0;
-	while (1) {
-		retval = recv(sock, buffer, sizeof(buffer), 0);
-		if (retval == SOCKET_ERROR)
-		{
-			err_display("fileData_recv()");
-			break;
-		}
-		else if (retval == 0)
-			break;
-		else {
-			fwrite(buffer, 1, retval, wfp);
-			if (ferror(wfp))
-			{
-				perror("fwrite()");
-				break;
-			}
-			totalBytes += retval;
-		}
-	}
-	free(buffer);
-	fclose(wfp);
-
-	//전송 결과 출력
-	if (retval == 0)
-	{
-		strcpy_s(saved_fileName, 256, fileName);
-		*saved_fileSize = totalBytes / 1024.0f / 1024.0f;
-		return 0;
-	}
-	else
-	{
-		//수신 실패!
+		err_display("재생목록 send()");
 		return 1;
 	}
+
+	//파일 전송
+	double sendByte;
+	for (int i = 1; i < 100; i++)
+	{
+		if (strlen(playlist[i]) == 0)
+			break;
+
+		sendFile(sock, playlist[i], &sendByte);
+		printf("전송 완료! (%0.2lfMB) \n", sendByte / 1024 / 1024);
+	}
+
+	return 0;
+}
+
+//파일 수신 함수 (경로는 최대 512바이트)
+int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvByte)
+{
+	/* 파일 수신 프로토콜
+	1. 파일 경로를 수신한다.
+	2. 파일 크기를 수신한다.
+	3. 파일 데이터를 수신한다. */
+
+	int retval;
+
+	//1. 파일 경로를 수신한다. (512바이트 고정 길이)
+	retval = recv(sock, filePath, 512, MSG_WAITALL);
+	if (retval == SOCKET_ERROR)
+		err_quit("파일 이름recv()");
+
+	//1-1. 수신할 파일을 쓰기모드로 연다.
+	FILE *wfp;
+	retval = fopen_s(&wfp, filePath, "wb");
+	if (retval != 0)
+	{
+		perror("파일 열기fopen_s()");
+		system("pause");
+		exit(1);
+	}
+
+	//2. 파일 크기를 수신한다. (4바이트 고정 길이)
+	unsigned int fileSize = 0;
+	retval = recv(sock, (char*)&fileSize, sizeof(int), MSG_WAITALL);
+	if (retval == SOCKET_ERROR)
+		err_quit("파일 크기recv()");
+
+	//3. 파일 데이터를 수신한다.
+	char *buffer = (char*)calloc(fileSize, sizeof(char));
+	retval = recv(sock, buffer, fileSize, MSG_WAITALL);
+	if (retval == SOCKET_ERROR)
+		err_quit("파일 데이터recv()");
+
+	//3-1. 수신한 데이터를 파일에 쓴다.
+	fwrite(buffer, 1, retval, wfp);
+	if (ferror(wfp))
+	{
+		perror("파일 쓰기fwrite()");
+		system("pause");
+		exit(1);
+	}
+
+	//파일 포인터, 동적 메모리 반환
+	fclose(wfp);
+	free(buffer);
+
+	//전송 결과 내보내기
+	*recvByte = retval;
+
+	return 0;
+}
+
+//재생목록에 있는 모든 파일 수신 함수
+int recvFullPlayList(SOCKET sock, char playList[][512])
+{
+	int retval;
+
+	//재생목록을 수신한다. (51200바이트 고정 길이)
+	retval = recv(sock, playList[0], 51200, MSG_WAITALL);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("재생목록 recv()");
+		return 1;
+	}
+
+	//파일 수신
+	double recvByte;
+	for (int i = 1; i < 100; i++)
+	{
+		if (strlen(playList[i]) == 0)
+			break;
+
+		recvFile(sock, playList[i], &recvByte);
+		printf("수신 완료! (%0.2lfMB)\n", recvByte / 1024 / 1024);
+	}
+
+	return 0;
 }
 
 //설정파일을 불러오는 함수

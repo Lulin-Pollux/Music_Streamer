@@ -33,7 +33,7 @@
     <ClCompile Include="src\Console.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="src\Player.c">
+    <ClCompile Include="src\MusicPlayer.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

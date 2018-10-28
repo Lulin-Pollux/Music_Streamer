@@ -1,6 +1,6 @@
 ﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#pragma comment(lib, "ws2_32")
-#pragma comment(lib, "mswsock")
+#pragma comment (lib, "ws2_32")
+#pragma comment (lib, "mswsock")
 #include <stdio.h>
 #include <WinSock2.h>
 #include "ClassLinker.h"
@@ -10,7 +10,6 @@
 int client(SETTINGS *setUp)
 {
 	int retval;
-	char buffer[100];
 
 	//윈속 초기화
 	WSADATA wsa;
@@ -18,6 +17,10 @@ int client(SETTINGS *setUp)
 
 	//서버와 통신할 소켓 생성
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+		err_quit("socket()");
+
+	//서버의 IP, Port 설정
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
@@ -31,29 +34,17 @@ int client(SETTINGS *setUp)
 	else
 		printf("서버와 연결되었습니다. \n\n");
 
-	//파일이 저장될 디렉토리를 설정하고 파일 이름, 크기를 받아올 변수를 선언한다.
-	char save_directory[100];
-	strcpy_s(save_directory, sizeof(save_directory), ".\\playQue");
-	char fileName[256];
-	float fileSize = 0.0f;
+	//----------------------------------------------------------------------
 
-	//클라이언트가 받을 파일 개수를 수신한다.
-	int fileCount = 0;
-	recv(sock, buffer, 2, MSG_WAITALL);
-	fileCount = atoi(buffer);
+	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
+	//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
+	//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
+	char playList[100][512] = { "\0" };
 
-	for (int i = 1; i <= fileCount; i++)
-	{
-		//파일을 수신한다.
-		retval = fileReceive(sock, save_directory, fileName, &fileSize);
-		if (retval == 0)
-			printf("'%s' 수신 완료! (%0.2fMB) \n\n", fileName, fileSize);
-		else if (retval == 1)
-		{
-			printf("'%s' 수신 실패! \n\n", fileName);
-			return 1;
-		}
-	}
+	retval = recvFullPlayList(sock, playList);
+	if (retval != 0)
+		printf("전체 재생목록 수신 오류. \n");
+	//----------------------------------------------------------------------
 
 	//서버와 연결을 종료한다.
 	closesocket(sock);
