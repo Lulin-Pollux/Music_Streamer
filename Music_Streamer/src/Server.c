@@ -7,16 +7,44 @@
 
 #define STREAMING_PORT 50000
 
-char playList[50][256];  //재생목록
-
 //재생목록을 초기화하는 함수
 int initializePlaylist(char playlist[][512])
 {
-	strcpy_s(playlist[1], 512, "./playQue/1.mp3");
-	strcpy_s(playlist[2], 512, "./playQue/2.mp3");
-	strcpy_s(playlist[3], 512, "./playQue/3.mp3");
-	strcpy_s(playlist[4], 512, "./playQue/4.mp3");
+	int retval;
+	char buffer[512];
 
+	//초기 재생목록 파일을 읽기모드로 연다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, "./playQue/초기 재생목록.txt", "r");
+	if (retval != 0)
+	{
+		perror("초기 재생목록 파일fopen_s()");
+		return 1;
+	}
+
+	//초기 재생목록 파일을 읽어온다.
+	int i = 1;
+	while (!feof(rfp))
+	{
+		fgets(buffer, 512, rfp);
+		if (strncmp(buffer, "//", 2) == 0)  //주석문 읽기안함
+			continue;
+		else if (strcmp(buffer, "\n") == 0)  //Enter 읽기안함
+			continue;
+		else
+		{
+			//'\n'문자 제거
+			int len = (int)strlen(buffer);
+			if (buffer[len - 1] == '\n')
+				buffer[len - 1] = '\0';
+
+			strcpy_s(playlist[i], 512, "./playQue/");
+			strcat_s(playlist[i], 512, buffer);
+		}
+		i++;
+	}
+
+	fclose(rfp);
 	return 0;
 }
 
@@ -67,7 +95,6 @@ int server()
 		printf("주소= %s:%d \n\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 		//----------------------------------------------------------------------
-
 		//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
 		//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
 		//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
@@ -92,7 +119,6 @@ int server()
 
 		//연결 종료
 		closesocket(client_sock);
-		break;
 	}
 
 
