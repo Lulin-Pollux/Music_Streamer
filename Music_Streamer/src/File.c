@@ -6,7 +6,7 @@
 
 
 //파일 송신 함수 (경로는 최대 512바이트)
-int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendByte)
+int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendBytes)
 {
 	/* 파일 송신 프로토콜
 	1. 파일 경로를 전송한다.
@@ -45,13 +45,13 @@ int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendByte)
 	}
 
 	//전송 결과 내보내기
-	*sendByte = fileSize;
+	*sendBytes = fileSize;
 
 	return 0;
 }
 
 //재생목록에 있는 모든 파일 전송 함수
-int sendFullPlaylist(SOCKET sock, char playlist[][512])
+int sendFullPlaylist(SOCKET sock, _In_ char playlist[][512], _Out_ double *allSendBytes)
 {
 	int retval;
 
@@ -64,21 +64,27 @@ int sendFullPlaylist(SOCKET sock, char playlist[][512])
 	}
 
 	//파일 전송
-	double sendByte;
+	*allSendBytes = 0.0;
+	double sendBytes = 0.0;
 	for (int i = 1; i < 100; i++)
 	{
+		//i번째 재생목록이 비어있으면 전송중지
 		if (strlen(playlist[i]) == 0)
 			break;
 
-		sendFile(sock, playlist[i], &sendByte);
-		printf("전송 완료! (%0.2lfMB) \n", sendByte / 1024 / 1024);
+		//i번째 재생목록을 전송한다.
+		retval = sendFile(sock, playlist[i], &sendBytes);
+		if (retval != 0)
+			printf("%d번째 파일에서 전송에 실패했습니다. \n", i);
+		else
+			*allSendBytes += sendBytes;
 	}
 
 	return 0;
 }
 
 //파일 수신 함수 (경로는 최대 512바이트)
-int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvByte)
+int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvBytes)
 {
 	/* 파일 수신 프로토콜
 	1. 파일 경로를 수신한다.
@@ -128,18 +134,18 @@ int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvByte)
 	free(buffer);
 
 	//전송 결과 내보내기
-	*recvByte = retval;
+	*recvBytes = retval;
 
 	return 0;
 }
 
 //재생목록에 있는 모든 파일 수신 함수
-int recvFullPlayList(SOCKET sock, char playList[][512])
+int recvFullPlayList(SOCKET sock, _Out_ char playlist[][512], _Out_ double *allRecvBytes)
 {
 	int retval;
 
 	//재생목록을 수신한다. (51200바이트 고정 길이)
-	retval = recv(sock, playList[0], 51200, MSG_WAITALL);
+	retval = recv(sock, playlist[0], 51200, MSG_WAITALL);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("재생목록 recv()");
@@ -147,21 +153,27 @@ int recvFullPlayList(SOCKET sock, char playList[][512])
 	}
 
 	//파일 수신
-	double recvByte;
+	*allRecvBytes = 0.0;
+	double recvBytes = 0.0;
 	for (int i = 1; i < 100; i++)
 	{
-		if (strlen(playList[i]) == 0)
+		//i번째 재생목록이 비어있으면 수신중지
+		if (strlen(playlist[i]) == 0)
 			break;
 
-		recvFile(sock, playList[i], &recvByte);
-		printf("수신 완료! (%0.2lfMB)\n", recvByte / 1024 / 1024);
+		//i번째 재생목록을 수신한다.
+		retval = recvFile(sock, playlist[i], &recvBytes);
+		if (retval != 0)
+			printf("%d번째 파일에서 수신에 실패했습니다. \n", i);
+		else
+			*allRecvBytes += recvBytes;
 	}
 
 	return 0;
 }
 
 //설정파일을 불러오는 함수
-int importSettings(SETTINGS *sets)
+int importSettings(_Out_ SETTINGS *sets)
 {
 	int retval;
 	char buffer[256];
@@ -230,7 +242,7 @@ int importSettings(SETTINGS *sets)
 }
 
 //재생목록을 초기화하는 함수
-int initializePlaylist(char playlist[][512])
+int initializePlaylist(_Out_ char playlist[][512])
 {
 	int retval;
 	char buffer[512];
@@ -248,11 +260,18 @@ int initializePlaylist(char playlist[][512])
 	int i = 1;
 	while (!feof(rfp))
 	{
+		//한 줄씩 파일을 읽어온다.
 		fgets(buffer, 512, rfp);
+
+		//예외사항을 적어둔다.
 		if (strncmp(buffer, "//", 2) == 0)  //주석문 읽기안함
 			continue;
 		else if (strcmp(buffer, "\n") == 0)  //Enter 읽기안함
 			continue;
+		else if (strncmp(buffer, " ", 1) == 0)  //맨 앞이 공백인 문장 읽기안함
+			continue;
+
+		//재생목록을 playlist배열에 복사한다.
 		else
 		{
 			//'\n'문자 제거
@@ -260,6 +279,7 @@ int initializePlaylist(char playlist[][512])
 			if (buffer[len - 1] == '\n')
 				buffer[len - 1] = '\0';
 
+			//앞에 상대경로를 붙이고 뒤에 파일명을 붙인다.
 			strcpy_s(playlist[i], 512, "./playQue/");
 			strcat_s(playlist[i], 512, buffer);
 		}

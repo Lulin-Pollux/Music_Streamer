@@ -43,16 +43,46 @@ int server(SETTINGS sets)
 	while (1)
 	{
 		//클라이언트의 접속을 기다림
-		printf("클라이언트의 접속을 기다리는 중... \n\n");
+		printf("\n클라이언트의 접속을 기다리는 중... \n");
 		client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
 		if (client_sock == INVALID_SOCKET)
-			err_display("accept()");
+			err_quit("accept()");
 
 		//클라이언트가 접속할 경우, 클라이언트의 아이디와 닉네임을 수신한다.
-		// 함수 ~~~~~
+		retval = recv(client_sock, (char*)&sets.client_uid, sizeof(sets.client_uid), MSG_WAITALL);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("클라이언트 아이디recv()");
+			closesocket(client_sock);
+			continue;
+		}
+		retval = recv(client_sock, (char*)&sets.client_nickName, sizeof(sets.client_nickName), MSG_WAITALL);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("클라이언트 닉네임recv()");
+			closesocket(client_sock);
+			continue;
+		}
+		
+		//곧바로 서버의 아이디와 닉네임을 송신한다.
+		retval = send(client_sock, (char*)&sets.server_uid, sizeof(sets.server_uid), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("서버 아이디send()");
+			closesocket(client_sock);
+			continue;
+		}
+		retval = send(client_sock, (char*)&sets.server_nickName, sizeof(sets.server_nickName), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("서버 닉네임send()");
+			closesocket(client_sock);
+			continue;
+		}
 
 		//접속한 클라이언트의 정보 출력
 		printf("클라이언트가 접속하였습니다. \n");
+		printf("아이디: %d, 닉네임: %s \n\n", sets.client_uid, sets.client_nickName);
 
 		//----------------------------------------------------------------------
 		//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
@@ -69,12 +99,15 @@ int server(SETTINGS sets)
 		}
 
 		//재생목록에 있는 모든 파일을 전송한다.
-		retval = sendFullPlaylist(client_sock, playlist);
+		double allSendBytes = 0.0;
+		retval = sendFullPlaylist(client_sock, playlist, &allSendBytes);
 		if (retval != 0)
 		{
 			printf("전체 재생목록 전송 오류. \n");
 			break;
 		}
+		else
+			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
 		//----------------------------------------------------------------------
 
 		//연결 종료

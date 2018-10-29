@@ -7,6 +7,8 @@
 int main()
 {
 	int retval;
+
+	//콘솔창 초기화
 	SetConsoleTitle("Music Radio");
 	system("mode con cols=90 lines=35");
 	setScreenBufferSize(90, 9000);
@@ -25,9 +27,15 @@ int main()
 
 	//설정에서 실행모드가 서버면 서버실행, 아니면 클라이언트 실행
 	if (strcmp(sets.execute_mode, "server") == 0)
+	{
+		printf("서버 모드로 실행합니다. \n");
 		server(sets);
+	}
 	else
+	{
+		printf("클라이언트 모드로 실행합니다. \n");
 		client(sets);
+	}
 
 	//프로그램 종료
 	system("pause");

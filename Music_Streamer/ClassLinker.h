@@ -74,22 +74,22 @@ void err_display(char *msg);
 /* File.c 의 함수 목록
 --------------------------------------------*/
 //파일 송신 함수 (경로는 최대 512바이트)
-int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendByte);
+int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendBytes);
 
 //재생목록에 있는 모든 파일 전송 함수
-int sendFullPlaylist(SOCKET sock, char playlist[][512]);
+int sendFullPlaylist(SOCKET sock, _In_ char playlist[][512], _Out_ double *allSendBytes);
 
 //파일 수신 함수 (경로는 최대 512바이트)
-int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvByte);
+int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvBytes);
 
 //재생목록에 있는 모든 파일 수신 함수
-int recvFullPlayList(SOCKET sock, char playList[][512]);
+int recvFullPlayList(SOCKET sock, _Out_ char playlist[][512], _Out_ double *allRecvBytes);
 
 //설정파일을 불러오는 함수
-int importSettings(SETTINGS *sets);
+int importSettings(_Out_ SETTINGS *sets);
 
 //재생목록을 초기화하는 함수
-int initializePlaylist(char playlist[][512]);
+int initializePlaylist(_Out_ char playlist[][512]);
 
 
 /* Player.c 의 함수 목록
