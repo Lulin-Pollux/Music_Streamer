@@ -73,11 +73,11 @@ int client(SETTINGS sets)
 	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
 	//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
 	//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
-	char playList[100][512] = { "\0" };
+	char playlist[100][512] = { "\0" };
 
 	//전체 재생목록을 수신한다.
 	double allRecvBytes = 0.0;
-	retval = recvFullPlayList(sock, playList, &allRecvBytes);
+	retval = recvFullPlayList(sock, playlist, &allRecvBytes);
 	if (retval != 0)
 		printf("전체 재생목록 수신 오류. \n");
 	else

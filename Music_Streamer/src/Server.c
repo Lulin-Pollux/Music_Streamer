@@ -98,6 +98,20 @@ int server(SETTINGS sets)
 			break;
 		}
 
+		//재생목록을 모두 보여준다.
+		printf("\t재생목록 \n");
+		printf("--------------------------------\n");
+		for (int i = 1; i < 100; i++)
+		{
+			if (strlen(playlist[i]) == 0)
+				break;
+			else
+			{
+				char *pos = strrchr(playlist[i], '/');
+				printf("%d. %s\n", i, pos + 1);
+			}
+		}
+
 		//재생목록에 있는 모든 파일을 전송한다.
 		double allSendBytes = 0.0;
 		retval = sendFullPlaylist(client_sock, playlist, &allSendBytes);
@@ -109,6 +123,7 @@ int server(SETTINGS sets)
 		else
 			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
 		//----------------------------------------------------------------------
+
 
 		//연결 종료
 		closesocket(client_sock);
