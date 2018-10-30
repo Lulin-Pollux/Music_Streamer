@@ -6,6 +6,42 @@
 #include "ClassLinker.h"
 
 
+//서버에서 서버, 클라이언트의 아이디와 닉네임을 교환하는 함수
+int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
+{
+	int retval;
+
+	//클라이언트가 접속할 경우, 클라이언트의 아이디와 닉네임을 수신한다.
+	retval = recv(sock, (char*)&sets->client_uid, sizeof(sets->client_uid), MSG_WAITALL);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("클라이언트 아이디recv()");
+		return 1;
+	}
+	retval = recv(sock, (char*)&sets->client_nickName, sizeof(sets->client_nickName), MSG_WAITALL);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("클라이언트 닉네임recv()");
+		return 1;
+	}
+
+	//곧바로 서버의 아이디와 닉네임을 송신한다.
+	retval = send(sock, (char*)&sets->server_uid, sizeof(sets->server_uid), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("서버 아이디send()");
+		return 1;
+	}
+	retval = send(sock, (char*)&sets->server_nickName, sizeof(sets->server_nickName), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("서버 닉네임send()");
+		return 1;
+	}
+
+	return 0;
+}
+
 //서버 메인 함수
 int server(SETTINGS sets)
 {
@@ -40,6 +76,26 @@ int server(SETTINGS sets)
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
 
+	//-----------------------------------------------------------------------
+	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
+	//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
+	//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
+	char playlist[100][512] = { "\0" };
+
+	//재생목록을 초기화한다.
+	retval = initializePlaylist(playlist);
+	if (retval != 0)
+	{
+		printf("재생목록 초기화 실패. \n");
+		return 1;
+	}
+
+	//전체 재생목록을 출력한다.
+	printf("\n");
+	printFullPlaylist(playlist);
+	//-----------------------------------------------------------------------
+
+	//서버 동작 시작
 	while (1)
 	{
 		//클라이언트의 접속을 기다림
@@ -48,34 +104,10 @@ int server(SETTINGS sets)
 		if (client_sock == INVALID_SOCKET)
 			err_quit("accept()");
 
-		//클라이언트가 접속할 경우, 클라이언트의 아이디와 닉네임을 수신한다.
-		retval = recv(client_sock, (char*)&sets.client_uid, sizeof(sets.client_uid), MSG_WAITALL);
-		if (retval == SOCKET_ERROR)
+		//서버에서 서버, 클라이언트의 아이디와 닉네임을 교환한다.
+		retval = server_exchangeIdNickname(client_sock, &sets);
+		if (retval != 0)
 		{
-			err_display("클라이언트 아이디recv()");
-			closesocket(client_sock);
-			continue;
-		}
-		retval = recv(client_sock, (char*)&sets.client_nickName, sizeof(sets.client_nickName), MSG_WAITALL);
-		if (retval == SOCKET_ERROR)
-		{
-			err_display("클라이언트 닉네임recv()");
-			closesocket(client_sock);
-			continue;
-		}
-		
-		//곧바로 서버의 아이디와 닉네임을 송신한다.
-		retval = send(client_sock, (char*)&sets.server_uid, sizeof(sets.server_uid), 0);
-		if (retval == SOCKET_ERROR)
-		{
-			err_display("서버 아이디send()");
-			closesocket(client_sock);
-			continue;
-		}
-		retval = send(client_sock, (char*)&sets.server_nickName, sizeof(sets.server_nickName), 0);
-		if (retval == SOCKET_ERROR)
-		{
-			err_display("서버 닉네임send()");
 			closesocket(client_sock);
 			continue;
 		}
@@ -83,23 +115,6 @@ int server(SETTINGS sets)
 		//접속한 클라이언트의 정보 출력
 		printf("클라이언트가 접속하였습니다. \n");
 		printf("아이디: %d, 닉네임: %s \n\n", sets.client_uid, sets.client_nickName);
-
-		//----------------------------------------------------------------------
-		//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
-		//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
-		//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
-		char playlist[100][512] = { "\0" };
-
-		//재생목록을 초기화한다.
-		retval = initializePlaylist(playlist);
-		if (retval != 0)
-		{
-			printf("재생목록 초기화 실패. \n");
-			break;
-		}
-
-		//전체 재생목록을 출력한다.
-		printFullPlaylist(playlist);
 
 		//재생목록에 있는 모든 파일을 전송한다.
 		double allSendBytes = 0.0;
@@ -111,7 +126,6 @@ int server(SETTINGS sets)
 		}
 		else
 			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
-		//----------------------------------------------------------------------
 
 
 		//연결 종료
