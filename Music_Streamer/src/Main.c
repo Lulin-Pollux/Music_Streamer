@@ -39,9 +39,17 @@ int main()
 		client(sets);
 	}
 	else if (strcmp(sets.execute_mode, "morse") == 0)
-		sndPlaySoundA(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
+	{
+		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_ASYNC);
+		printf("Morse 이스터 에그를 실행합니다. \n");
+		printf("Morse 디코더로 분석해보세요~~ \n\n");
+	}
 	else if (strcmp(sets.execute_mode, "sstv") == 0)
-		sndPlaySoundA(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_ASYNC);
+	{
+		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE2), SND_RESOURCE | SND_ASYNC);
+		printf("SSTV 신호입니다. \n");
+		printf("SSTV 디코더로 출력해보세요~~ \n\n");
+	}
 	else
 	{
 		printf("알 수 없는 실행모드입니다. \n");
