@@ -4,7 +4,26 @@
 #include "ClassLinker.h"
 
 
-int player(char *filePath)
+//전체 재생목록을 출력한다.
+int printFullPlaylist(char playlist[][512])
+{
+	printf("\t 재생목록 \n");
+	printf("--------------------------------\n");
+	for (int i = 1; i < 100; i++)
+	{
+		if (strlen(playlist[i]) == 0)
+			break;
+		else
+		{
+			char *pos = strrchr(playlist[i], '/');
+			printf("%d. %s\n", i, pos + 1);
+		}
+	}
+
+	return 0;
+}
+
+int musicPlayer(char *filePath)
 {
 	int retval;
 	MCI_OPEN_PARMS mciOpen;  //장치 드라이버를 열 때 보고서

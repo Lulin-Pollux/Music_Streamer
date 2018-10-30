@@ -94,7 +94,11 @@ int initializePlaylist(_Out_ char playlist[][512]);
 
 /* Player.c 의 함수 목록
 --------------------------------------------*/
-int player(char *fileName);
+//전체 재생목록을 출력한다.
+int printFullPlaylist(char playlist[][512]);
+
+//음악을 재생한다.
+int musicPlayer(char *filePath);
 
 
 /* Server.c 의 함수 목록
