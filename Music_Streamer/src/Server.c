@@ -6,12 +6,12 @@
 #include "ClassLinker.h"
 
 
-//서버에서 서버, 클라이언트의 아이디와 닉네임을 교환하는 함수
+//서버에서 서버와 클라이언트의 아이디, 닉네임을 교환하는 함수
 int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 {
 	int retval;
 
-	//클라이언트가 접속할 경우, 클라이언트의 아이디와 닉네임을 수신한다.
+	//클라이언트의 아이디와 닉네임을 수신한다.
 	retval = recv(sock, (char*)&sets->client_uid, sizeof(sets->client_uid), MSG_WAITALL);
 	if (retval == SOCKET_ERROR)
 	{
@@ -104,7 +104,8 @@ int server(SETTINGS sets)
 		if (client_sock == INVALID_SOCKET)
 			err_quit("accept()");
 
-		//서버에서 서버, 클라이언트의 아이디와 닉네임을 교환한다.
+		//클라이언트가 접속할 경우,
+		//서버와 클라이언트의 아이디, 닉네임을 교환한다.
 		retval = server_exchangeIdNickname(client_sock, &sets);
 		if (retval != 0)
 		{
