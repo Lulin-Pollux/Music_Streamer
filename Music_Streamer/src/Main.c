@@ -2,6 +2,7 @@
 #include <WinSock2.h>
 #include <Windows.h>
 #include "ClassLinker.h"
+#include "resource.h"
 
 
 int main()
@@ -26,15 +27,26 @@ int main()
 	}
 
 	//설정에서 실행모드가 서버면 서버실행, 아니면 클라이언트 실행
+	//만약, morse나 sstv면 이스터에그 실행
 	if (strcmp(sets.execute_mode, "server") == 0)
 	{
 		printf("서버 모드로 실행합니다. \n");
 		server(sets);
 	}
-	else
+	else if (strcmp(sets.execute_mode, "client") == 0)
 	{
 		printf("클라이언트 모드로 실행합니다. \n");
 		client(sets);
+	}
+	else if (strcmp(sets.execute_mode, "morse") == 0)
+		sndPlaySoundA(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
+	else if (strcmp(sets.execute_mode, "sstv") == 0)
+		sndPlaySoundA(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_ASYNC);
+	else
+	{
+		printf("알 수 없는 실행모드입니다. \n");
+		printf("실행모드를 정확히 적어주세요. \n");
+		exit(1);
 	}
 
 	//프로그램 종료
