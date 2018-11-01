@@ -100,8 +100,12 @@ int client(SETTINGS sets)
 	//전체 재생목록을 출력한다.
 	printf("\n");
 	printFullPlaylist(playlist);
+	printf("\n");
 
 	//재생목록에 있는 파일을 서버와 동기화하면서 재생한다.
+	retval = client_MusicPlayer(playlist);
+	if (retval == 0)
+		printf("서버에서 보내준 재생목록을 모두 재생했습니다. \n");
 	//---------------------------------------------------------------------------------
 
 

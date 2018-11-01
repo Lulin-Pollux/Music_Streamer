@@ -92,14 +92,39 @@ int importSettings(_Out_ SETTINGS *sets);
 int initializePlaylist(_Out_ char playlist[][512]);
 
 
+/* MCI Controller.c 의 함수 목록
+--------------------------------------------*/
+//MCI 오류를 출력하는 함수
+int printMciError(int errorCode);
+
+//오디오 파일을 닫는 함수
+int closeAudioFile(MCIDEVICEID deviceID);
+
+//오디오 파일을 재생하는 함수
+int playAudioFile(MCIDEVICEID deviceID, MCI_PLAY_PARMS *mciPlay);
+
+//오디오 파일 재생을 일시정지하는 함수
+//메모리에 오디오 파일을 유지시켜, 다시재생할 때 빠르게 재생한다.
+int pauseAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
+
+//오디오 파일 재생을 재개하는 함수
+int resumeAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
+
+//오디오 파일 재생을 정지하는 함수(mciGeneric = NULL)
+//일시정지와 다르게 메모리에서 오디오 파일을 내려버린다.
+int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
+
+//재생 위치를 이동시키는 함수
+int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl);
+
+
 /* Player.c 의 함수 목록
 --------------------------------------------*/
 //전체 재생목록을 출력한다.
 int printFullPlaylist(char playlist[][512]);
 
-//음악을 재생한다.
-int musicPlayer(char *filePath);
-
+//클라이언트용 음악 플레이어
+int client_MusicPlayer(char playlist[][512]);
 
 /* Server.c 의 함수 목록
 --------------------------------------------*/

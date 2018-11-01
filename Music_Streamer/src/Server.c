@@ -86,7 +86,9 @@ int server(SETTINGS sets)
 	retval = initializePlaylist(playlist);
 	if (retval != 0)
 	{
+		textcolor(YELLOW);
 		printf("재생목록 초기화 실패. \n");
+		textcolor(RESET);
 		return 1;
 	}
 
@@ -127,10 +129,6 @@ int server(SETTINGS sets)
 		}
 		else
 			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
-
-
-		//연결 종료
-		closesocket(client_sock);
 	}
 
 

@@ -36,6 +36,9 @@
     <ClCompile Include="src\MusicPlayer.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="src\MCI Controller.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassLinker.h">

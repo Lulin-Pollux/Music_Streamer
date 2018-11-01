@@ -20,8 +20,10 @@ int main()
 	retval = importSettings(&sets);
 	if (retval != 0)
 	{
+		textcolor(YELLOW);
 		printf("설정파일이 누락되어 있습니다. \n");
 		printf("설정파일을 복구해주세요. \n");
+		textcolor(RESET);
 		system("pause");
 		exit(1);
 	}
@@ -30,25 +32,35 @@ int main()
 	//만약, morse나 sstv면 이스터에그 실행
 	if (strcmp(sets.execute_mode, "server") == 0)
 	{
+		textcolor(YELLOW);
 		printf("서버 모드로 실행합니다. \n");
+		textcolor(RESET);
 		server(sets);
 	}
 	else if (strcmp(sets.execute_mode, "client") == 0)
 	{
+		textcolor(YELLOW);
 		printf("클라이언트 모드로 실행합니다. \n");
+		textcolor(RESET);
 		client(sets);
 	}
 	else if (strcmp(sets.execute_mode, "morse") == 0)
 	{
-		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_ASYNC);
-		printf("Morse 이스터 에그를 실행합니다. \n");
-		printf("Morse 디코더로 분석해보세요~~ \n\n");
+		textcolor(GREEN);
+		printf("\n");
+		printf("interior transmission active external data line active message digest active. \n");
+		printf("system data dump active user backup active password backup active. \n");
+		textcolor(RESET);
+		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_SYNC);
 	}
 	else if (strcmp(sets.execute_mode, "sstv") == 0)
 	{
-		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE2), SND_RESOURCE | SND_ASYNC);
-		printf("SSTV 신호입니다. \n");
-		printf("SSTV 디코더로 출력해보세요~~ \n\n");
+		textcolor(SKY_BLUE);
+		printf("\n");
+		printf("FB00BF4049C0A6C46D101FF11AF2C73A957D139D761F437877160DF535D09C5");
+		printf("AE99780491B0DE660A09E3CBB87FA4D581F9BD0BAA96C153571C05B52AE4DC906 \n");
+		textcolor(RESET);
+		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE2), SND_RESOURCE | SND_SYNC);
 	}
 	else
 	{

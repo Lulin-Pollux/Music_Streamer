@@ -151,6 +151,7 @@
     <ClCompile Include="src\Error.c" />
     <ClCompile Include="src\File.c" />
     <ClCompile Include="src\Main.c" />
+    <ClCompile Include="src\MCI Controller.c" />
     <ClCompile Include="src\MusicPlayer.c" />
     <ClCompile Include="src\Server.c" />
   </ItemGroup>
