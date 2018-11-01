@@ -7,6 +7,7 @@
 //전체 재생목록을 출력한다.
 int printFullPlaylist(char playlist[][512])
 {
+	printf("\n");
 	printf("\t 재생목록 \n");
 	printf("--------------------------------\n");
 	for (int i = 1; i < 100; i++)
@@ -18,6 +19,57 @@ int printFullPlaylist(char playlist[][512])
 			char *pos = strrchr(playlist[i], '/');
 			printf("%d. %s\n", i, pos + 1);
 		}
+	}
+
+	return 0;
+}
+
+//재생목록에 파일을 추가하는 함수
+int addPlaylist(char *fileName, char playlist[][512])
+{
+	int retval;
+	char buffer[512];
+
+	//앞에 상대경로를 붙이고 뒤에 파일명을 붙인다.
+	strcpy_s(buffer, 512, "./playQue/");
+	strcat_s(buffer, 512, fileName);
+
+	//파일이름에 해당하는 파일이 존재하는지 검사한다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, buffer, "r");
+	if (retval != 0)
+	{
+		textcolor(YELLOW);
+		printf("해당 파일이 없습니다. \n");
+		textcolor(RESET);
+		return 1;
+	}
+	else
+		fclose(rfp);
+
+	//재생목록의 끝을 알아낸다.
+	int eol = -1;
+	for (int i = 1; i < 100; i++)
+	{
+		if (strlen(playlist[i]) == 0)
+		{
+			eol = i;
+			break;
+		}
+	}
+
+	//재생목록이 꽉찬경우, 종료한다.
+	if (eol < 0)
+	{
+		textcolor(YELLOW);
+		printf("재생목록에 빈 공간이 없습니다. \n");
+		textcolor(RESET);
+		return 1;
+	}
+	else
+	{
+		//재생목록에 추가한다.
+		strcpy_s(playlist[eol], 512, buffer);
 	}
 
 	return 0;

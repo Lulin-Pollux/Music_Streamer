@@ -118,10 +118,13 @@ int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
 int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl);
 
 
-/* Player.c 의 함수 목록
+/* MusicPlayer.c 의 함수 목록
 --------------------------------------------*/
 //전체 재생목록을 출력한다.
 int printFullPlaylist(char playlist[][512]);
+
+//재생목록에 파일을 추가하는 함수
+int addPlaylist(char *fileName, char playlist[][512]);
 
 //클라이언트용 음악 플레이어
 int client_MusicPlayer(char playlist[][512]);

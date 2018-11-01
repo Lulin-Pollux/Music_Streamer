@@ -42,6 +42,7 @@ int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
+
 //서버 메인 함수
 int server(SETTINGS sets)
 {
@@ -92,11 +93,6 @@ int server(SETTINGS sets)
 		return 1;
 	}
 
-	//전체 재생목록을 출력한다.
-	printf("\n");
-	printFullPlaylist(playlist);
-	//-----------------------------------------------------------------------
-
 	//서버 동작 시작
 	while (1)
 	{
@@ -128,7 +124,35 @@ int server(SETTINGS sets)
 			break;
 		}
 		else
-			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
+			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n\n", allSendBytes / 1024 / 1024);
+
+		//명령 입력받기
+		while (1)
+		{
+			int input;
+			printf("1. 재생목록 검색, 2: 재생목록 추가, 3: 재생목록 삭제 \n");
+			printf(">>> ");
+			scanf_s("%d", &input);
+			clearInputBuffer();
+
+			switch (input)
+			{
+			case 1:
+				printFullPlaylist(playlist);
+				break;
+			case 2:
+				printf("재생목록에 추가할 파일명을 입력해주세요. \n");
+				printf(">>> ");
+				char fileName[256];
+				gets_s(fileName, sizeof(fileName));
+				retval = addPlaylist(fileName, playlist);
+				if (retval == 0)
+					printf("재생목록을 추가했습니다.");
+				break;
+			case 3:
+				break;
+			}
+		}
 	}
 
 

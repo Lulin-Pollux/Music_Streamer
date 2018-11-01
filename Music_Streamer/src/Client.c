@@ -98,7 +98,6 @@ int client(SETTINGS sets)
 		printf("전체 재생목록 수신 완료! (%0.2lfMB)\n", allRecvBytes / 1024 / 1024);
 
 	//전체 재생목록을 출력한다.
-	printf("\n");
 	printFullPlaylist(playlist);
 	printf("\n");
 
