@@ -42,6 +42,53 @@ int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
+//재생목록을 관리하는 스레드 
+DWORD WINAPI operatePlaylist(LPVOID playlist)
+{
+	int retval;
+
+	//재생목록을 초기화한다.
+	retval = initializePlaylist(playlist);
+	if (retval != 0)
+	{
+		textcolor(YELLOW);
+		printf("재생목록 초기화 실패. \n");
+		textcolor(RESET);
+		return 1;
+	}
+
+	while (1)
+	{
+		int input = -1;
+		printf("재생목록 검색(1), 재생목록 추가(2), 재생목록 삭제(3): ");
+		scanf_s("%d", &input);
+		clearInputBuffer();
+
+		switch (input)
+		{
+		case 1:
+			printFullPlaylist(playlist);
+			break;
+		case 2:
+			printf("재생목록에 추가할 파일명을 입력해주세요. \n");
+			printf(">>> ");
+			char fileName[256];
+			gets_s(fileName, sizeof(fileName));
+			retval = addPlaylist(fileName, playlist);
+			if (retval == 0)
+				printf("재생목록을 추가했습니다.");
+			break;
+		case 3:
+			printf("아직 개발 중입니다. \n");
+			break;
+		case 0:
+			system("cls");
+			break;
+		}
+	}
+
+	return 0;
+}
 
 //서버 메인 함수
 int server(SETTINGS sets)
@@ -83,15 +130,9 @@ int server(SETTINGS sets)
 	//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
 	char playlist[100][512] = { "\0" };
 
-	//재생목록을 초기화한다.
-	retval = initializePlaylist(playlist);
-	if (retval != 0)
-	{
-		textcolor(YELLOW);
-		printf("재생목록 초기화 실패. \n");
-		textcolor(RESET);
-		return 1;
-	}
+	//재생목록 운영 스레드 생성
+	HANDLE hThread1 = CreateThread(NULL, 0, operatePlaylist, playlist, 0, NULL);
+	CloseHandle(hThread1);
 
 	//서버 동작 시작
 	while (1)
@@ -112,8 +153,11 @@ int server(SETTINGS sets)
 		}
 
 		//접속한 클라이언트의 정보 출력
-		printf("클라이언트가 접속하였습니다. \n");
+		textcolor(GREEN);
+		printf("\n클라이언트가 접속하였습니다. \n");
+		textcolor(WHITE);
 		printf("아이디: %d, 닉네임: %s \n\n", sets.client_uid, sets.client_nickName);
+		textcolor(RESET);
 
 		//재생목록에 있는 모든 파일을 전송한다.
 		double allSendBytes = 0.0;
@@ -124,34 +168,10 @@ int server(SETTINGS sets)
 			break;
 		}
 		else
-			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n\n", allSendBytes / 1024 / 1024);
-
-		//명령 입력받기
-		while (1)
 		{
-			int input;
-			printf("1. 재생목록 검색, 2: 재생목록 추가, 3: 재생목록 삭제 \n");
-			printf(">>> ");
-			scanf_s("%d", &input);
-			clearInputBuffer();
-
-			switch (input)
-			{
-			case 1:
-				printFullPlaylist(playlist);
-				break;
-			case 2:
-				printf("재생목록에 추가할 파일명을 입력해주세요. \n");
-				printf(">>> ");
-				char fileName[256];
-				gets_s(fileName, sizeof(fileName));
-				retval = addPlaylist(fileName, playlist);
-				if (retval == 0)
-					printf("재생목록을 추가했습니다.");
-				break;
-			case 3:
-				break;
-			}
+			textcolor(GREEN);
+			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
+			textcolor(RESET);
 		}
 	}
 

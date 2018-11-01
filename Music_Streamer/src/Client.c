@@ -42,6 +42,7 @@ int client_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
+
 //클라이언트 메인 함수
 int client(SETTINGS sets)
 {
@@ -81,7 +82,7 @@ int client(SETTINGS sets)
 	}
 
 	//접속한 서버의 정보 출력
-	printf("서버에 연결하였습니다. \n");
+	printf("서버에 연결했습니다. \n");
 	printf("아이디: %d, 닉네임: %s \n\n", sets.server_uid, sets.server_nickName);
 
 	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
@@ -97,14 +98,30 @@ int client(SETTINGS sets)
 	else
 		printf("전체 재생목록 수신 완료! (%0.2lfMB)\n", allRecvBytes / 1024 / 1024);
 
-	//전체 재생목록을 출력한다.
-	printFullPlaylist(playlist);
-	printf("\n");
-
 	//재생목록에 있는 파일을 서버와 동기화하면서 재생한다.
-	retval = client_MusicPlayer(playlist);
-	if (retval == 0)
-		printf("서버에서 보내준 재생목록을 모두 재생했습니다. \n");
+	while (1)
+	{
+		//콘솔 창 지움
+		system("cls");
+
+		//전체 재생목록을 출력한다.
+		textcolor(WHITE);
+		printFullPlaylist(playlist);
+		printf("\n");
+		textcolor(RESET);
+
+		//재생목록이 비었으면 종료한다.
+		if (strlen(playlist[1]) == 0)
+			break;
+
+		//재생목록에서 1번을 재생한다.
+		retval = client_MusicPlayer(playlist[1]);
+		if (retval != 0)
+			break;
+
+		//재생이 끝나면 재생했던 1번을 지우고 나머지를 위로 올린다.
+		deletePlaylist(1, playlist);
+	}
 	//---------------------------------------------------------------------------------
 
 

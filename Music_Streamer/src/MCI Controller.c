@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <Windows.h>
 #include <Digitalv.h>
 #include "ClassLinker.h"
@@ -8,7 +8,7 @@
 #define SEEK_TO 2
 
 
-//MCI ¿À·ù¸¦ Ãâ·ÂÇÏ´Â ÇÔ¼ö
+//MCI ì˜¤ë¥˜ë¥¼ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
 int printMciError(int errorCode)
 {
 	int retval;
@@ -17,7 +17,7 @@ int printMciError(int errorCode)
 	retval = mciGetErrorString(errorCode, buffer, sizeof(buffer));
 	if (retval != TRUE)
 	{
-		printf("ÇØ´ç ¿¡·¯ÄÚµå¸¦ ¾Ë ¼ö ¾ø½À´Ï´Ù. \n");
+		printf("í•´ë‹¹ ì—ëŸ¬ì½”ë“œë¥¼ ì•Œ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. \n");
 		return 1;
 	}
 	else
@@ -26,12 +26,12 @@ int printMciError(int errorCode)
 	return 0;
 }
 
-//¿Àµğ¿À ÆÄÀÏÀ» ´İ´Â ÇÔ¼ö
+//ì˜¤ë””ì˜¤ íŒŒì¼ì„ ë‹«ëŠ” í•¨ìˆ˜
 int closeAudioFile(MCIDEVICEID deviceID)
 {
 	int retval;
 
-	//»ç¿îµå ÀåÄ¡ µå¶óÀÌ¹ö ´İ±â
+	//ì‚¬ìš´ë“œ ì¥ì¹˜ ë“œë¼ì´ë²„ ë‹«ê¸°
 	retval = mciSendCommand(deviceID, MCI_CLOSE, MCI_NOTIFY, 0);
 	if (retval != 0)
 		printMciError(retval);
@@ -39,7 +39,7 @@ int closeAudioFile(MCIDEVICEID deviceID)
 	return 0;
 }
 
-//¿Àµğ¿À ÆÄÀÏÀ» Àç»ıÇÏ´Â ÇÔ¼ö
+//ì˜¤ë””ì˜¤ íŒŒì¼ì„ ì¬ìƒí•˜ëŠ” í•¨ìˆ˜
 int playAudioFile(MCIDEVICEID deviceID, MCI_PLAY_PARMS *mciPlay)
 {
 	int retval;
@@ -54,8 +54,8 @@ int playAudioFile(MCIDEVICEID deviceID, MCI_PLAY_PARMS *mciPlay)
 	return 0;
 }
 
-//¿Àµğ¿À ÆÄÀÏ Àç»ıÀ» ÀÏ½ÃÁ¤ÁöÇÏ´Â ÇÔ¼ö
-//¸Ş¸ğ¸®¿¡ ¿Àµğ¿À ÆÄÀÏÀ» À¯Áö½ÃÄÑ, ´Ù½ÃÀç»ıÇÒ ¶§ ºü¸£°Ô Àç»ıÇÑ´Ù.
+//ì˜¤ë””ì˜¤ íŒŒì¼ ì¬ìƒì„ ì¼ì‹œì •ì§€í•˜ëŠ” í•¨ìˆ˜
+//ë©”ëª¨ë¦¬ì— ì˜¤ë””ì˜¤ íŒŒì¼ì„ ìœ ì§€ì‹œì¼œ, ë‹¤ì‹œì¬ìƒí•  ë•Œ ë¹ ë¥´ê²Œ ì¬ìƒí•œë‹¤.
 int pauseAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric)
 {
 	int retval;
@@ -70,7 +70,7 @@ int pauseAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric)
 	return 0;
 }
 
-//¿Àµğ¿À ÆÄÀÏ Àç»ıÀ» Àç°³ÇÏ´Â ÇÔ¼ö
+//ì˜¤ë””ì˜¤ íŒŒì¼ ì¬ìƒì„ ì¬ê°œí•˜ëŠ” í•¨ìˆ˜
 int resumeAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric)
 {
 	int retval;
@@ -85,8 +85,8 @@ int resumeAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric)
 	return 0;
 }
 
-//¿Àµğ¿À ÆÄÀÏ Àç»ıÀ» Á¤ÁöÇÏ´Â ÇÔ¼ö(mciGeneric = NULL)
-//ÀÏ½ÃÁ¤Áö¿Í ´Ù¸£°Ô ¸Ş¸ğ¸®¿¡¼­ ¿Àµğ¿À ÆÄÀÏÀ» ³»·Á¹ö¸°´Ù.
+//ì˜¤ë””ì˜¤ íŒŒì¼ ì¬ìƒì„ ì •ì§€í•˜ëŠ” í•¨ìˆ˜(mciGeneric = NULL)
+//ì¼ì‹œì •ì§€ì™€ ë‹¤ë¥´ê²Œ ë©”ëª¨ë¦¬ì—ì„œ ì˜¤ë””ì˜¤ íŒŒì¼ì„ ë‚´ë ¤ë²„ë¦°ë‹¤.
 int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric)
 {
 	int retval;
@@ -101,14 +101,14 @@ int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric)
 	return 0;
 }
 
-//Àç»ı À§Ä¡¸¦ ÀÌµ¿½ÃÅ°´Â ÇÔ¼ö
+//ì¬ìƒ ìœ„ì¹˜ë¥¼ ì´ë™ì‹œí‚¤ëŠ” í•¨ìˆ˜
 int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl)
 {
 	int retval;
 
 	switch (seekControl)
 	{
-	//½ÃÀÛ À§Ä¡·Î ÀÌµ¿
+	//ì‹œì‘ ìœ„ì¹˜ë¡œ ì´ë™
 	case SEEK_TO_START:
 		retval = mciSendCommand(deviceID, MCI_SEEK, MCI_SEEK_TO_START, (DWORD_PTR)&mciSeek);
 		if (retval != 0)
@@ -117,7 +117,7 @@ int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl
 			return 1;
 		}
 		break;
-	//³¡ À§Ä¡·Î ÀÌµ¿
+	//ë ìœ„ì¹˜ë¡œ ì´ë™
 	case SEEK_TO_END:
 		retval = mciSendCommand(deviceID, MCI_SEEK, MCI_SEEK_TO_END, (DWORD_PTR)&mciSeek);
 		if (retval != 0)
@@ -126,7 +126,7 @@ int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl
 			return 1;
 		}
 		break;
-	//Æ¯Á¤ À§Ä¡·Î ÀÌµ¿
+	//íŠ¹ì • ìœ„ì¹˜ë¡œ ì´ë™
 	case SEEK_TO:
 		retval = mciSendCommand(deviceID, MCI_SEEK, MCI_TO, (DWORD_PTR)&mciSeek);
 		if (retval != 0)

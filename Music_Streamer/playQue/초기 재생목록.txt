@@ -2,8 +2,8 @@
 //playQue 폴더에 있는 파일 중 재생할 것을 골라서 적어주세요.
 //-------------------------------------------------------------------
 
-Dream.mp3
-Eltina.mp3
 Overlong.mp3
+Eltina.mp3
+Dream.mp3
 YUBIKIRI-GENMAN (special edit).mp3
 幾年月.mp3

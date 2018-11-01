@@ -1,21 +1,21 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <Windows.h>
 
 
-//ÀÔ·Â ¹öÆÛ¸¦ ºñ¿öÁØ´Ù.
+//ì…ë ¥ ë²„í¼ë¥¼ ë¹„ì›Œì¤€ë‹¤.
 void clearInputBuffer()
 {
 	while (getchar() != '\n');
 }
 
-//ÄÜ¼ÖÀÇ ±ÛÀÚ»öÀ» º¯°æÇÑ´Ù.
+//ì½˜ì†”ì˜ ê¸€ììƒ‰ì„ ë³€ê²½í•œë‹¤.
 int textcolor(unsigned short color_number)
 {
 	int retval = SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color_number);
 	return retval;
 }
 
-//Ä¿¼­ÀÇ À§Ä¡¸¦ º¯°æÇÑ´Ù.
+//ì»¤ì„œì˜ ìœ„ì¹˜ë¥¼ ë³€ê²½í•œë‹¤.
 int setCursorPos(short x, short y)
 {
 	COORD position = { x - 1, y - 1 };
@@ -23,7 +23,7 @@ int setCursorPos(short x, short y)
 	return retval;
 }
 
-//È­¸é ¹öÆÛ Å©±â¸¦ ¼³Á¤ÇÑ´Ù.
+//í™”ë©´ ë²„í¼ í¬ê¸°ë¥¼ ì„¤ì •í•œë‹¤.
 int setScreenBufferSize(short x, short y)
 {
 	COORD size = { x, y };

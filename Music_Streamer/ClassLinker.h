@@ -1,4 +1,4 @@
-/********************************************************************************
+ï»¿/********************************************************************************
 *                                                                               *
 * ClassLinker.h -- Custom functions compilation                                 *
 *                                                                               *
@@ -7,22 +7,22 @@
 ********************************************************************************/
 
 
-/* ¸ğµç ÄÚµåÆÄÀÏ¿¡¼­ ¾²ÀÌ´Â ÀüÃ³¸®¹®, ±¸Á¶Ã¼ µîÀÇ ¸ñ·Ï
+/* ëª¨ë“  ì½”ë“œíŒŒì¼ì—ì„œ ì“°ì´ëŠ” ì „ì²˜ë¦¬ë¬¸, êµ¬ì¡°ì²´ ë“±ì˜ ëª©ë¡
 --------------------------------------------------------------------*/
-//ÇÁ·Î±×·¥ÀÇ ¼³Á¤À» ÀúÀåÇÒ ±¸Á¶Ã¼
+//í”„ë¡œê·¸ë¨ì˜ ì„¤ì •ì„ ì €ì¥í•  êµ¬ì¡°ì²´
 typedef struct settings
 {
-	char execute_mode[7];		//ÇÁ·Î±×·¥ÀÇ ½ÃÀÛ¸ğµå
-	char server_ip[16];			//¼­¹öÀÇ IP ÁÖ¼Ò
-	int server_mainPort;		//¼­¹öÀÇ ÁÖ Æ÷Æ®
-	int server_requestPort;		//¼­¹öÀÇ Ç®¸®Äù Æ÷Æ®
-	int server_uid;				//¼­¹öÀÇ ¾ÆÀÌµğ
-	char server_nickName[50];	//¼­¹öÀÇ ´Ğ³×ÀÓ
-	int client_uid;				//Å¬¶óÀÌ¾ğÆ®ÀÇ ¾ÆÀÌµğ
-	char client_nickName[50];	//Å¬¶óÀÌ¾ğÆ®ÀÇ ´Ğ³×ÀÓ
+	char execute_mode[7];		//í”„ë¡œê·¸ë¨ì˜ ì‹œì‘ëª¨ë“œ
+	char server_ip[16];			//ì„œë²„ì˜ IP ì£¼ì†Œ
+	int server_mainPort;		//ì„œë²„ì˜ ì£¼ í¬íŠ¸
+	int server_requestPort;		//ì„œë²„ì˜ í’€ë¦¬í€˜ í¬íŠ¸
+	int server_uid;				//ì„œë²„ì˜ ì•„ì´ë””
+	char server_nickName[50];	//ì„œë²„ì˜ ë‹‰ë„¤ì„
+	int client_uid;				//í´ë¼ì´ì–¸íŠ¸ì˜ ì•„ì´ë””
+	char client_nickName[50];	//í´ë¼ì´ì–¸íŠ¸ì˜ ë‹‰ë„¤ì„
 }SETTINGS;
 
-//±ÛÀÚ»ö º¯°æÇÒ ¶§ ¼ıÀÚ ´ë½Å »ç¿ë
+//ê¸€ììƒ‰ ë³€ê²½í•  ë•Œ ìˆ«ì ëŒ€ì‹  ì‚¬ìš©
 #define RESET 7
 #define DARK_BLUE 1
 #define DARK_GREEN 2
@@ -42,93 +42,96 @@ typedef struct settings
 /*--------------------------------------------------------------------*/
 
 
-/* Client.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+/* Client.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
 int client(SETTINGS sets);
 
 
-/* Console.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+/* Console.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
-//ÀÔ·Â ¹öÆÛ¸¦ ºñ¿öÁØ´Ù.
+//ì…ë ¥ ë²„í¼ë¥¼ ë¹„ì›Œì¤€ë‹¤.
 void clearInputBuffer();
 
-//ÄÜ¼ÖÀÇ ±ÛÀÚ»öÀ» º¯°æÇÑ´Ù.
+//ì½˜ì†”ì˜ ê¸€ììƒ‰ì„ ë³€ê²½í•œë‹¤.
 int textcolor(unsigned short color_number);
 
-//Ä¿¼­ÀÇ À§Ä¡¸¦ º¯°æÇÑ´Ù.
+//ì»¤ì„œì˜ ìœ„ì¹˜ë¥¼ ë³€ê²½í•œë‹¤.
 int setCursorPos(short x, short y);
 
-//È­¸é ¹öÆÛ Å©±â¸¦ ¼³Á¤ÇÑ´Ù.
+//í™”ë©´ ë²„í¼ í¬ê¸°ë¥¼ ì„¤ì •í•œë‹¤.
 int setScreenBufferSize(short x, short y);
 
 
-/* Error.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+/* Error.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â ÈÄ Á¾·á
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥ í›„ ì¢…ë£Œ
 void err_quit(char *msg);
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥
 void err_display(char *msg);
 
 
-/* File.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+/* File.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
-//ÆÄÀÏ ¼Û½Å ÇÔ¼ö (°æ·Î´Â ÃÖ´ë 512¹ÙÀÌÆ®)
+//íŒŒì¼ ì†¡ì‹  í•¨ìˆ˜ (ê²½ë¡œëŠ” ìµœëŒ€ 512ë°”ì´íŠ¸)
 int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendBytes);
 
-//Àç»ı¸ñ·Ï¿¡ ÀÖ´Â ¸ğµç ÆÄÀÏ Àü¼Û ÇÔ¼ö
+//ì¬ìƒëª©ë¡ì— ìˆëŠ” ëª¨ë“  íŒŒì¼ ì „ì†¡ í•¨ìˆ˜
 int sendFullPlaylist(SOCKET sock, _In_ char playlist[][512], _Out_ double *allSendBytes);
 
-//ÆÄÀÏ ¼ö½Å ÇÔ¼ö (°æ·Î´Â ÃÖ´ë 512¹ÙÀÌÆ®)
+//íŒŒì¼ ìˆ˜ì‹  í•¨ìˆ˜ (ê²½ë¡œëŠ” ìµœëŒ€ 512ë°”ì´íŠ¸)
 int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvBytes);
 
-//Àç»ı¸ñ·Ï¿¡ ÀÖ´Â ¸ğµç ÆÄÀÏ ¼ö½Å ÇÔ¼ö
+//ì¬ìƒëª©ë¡ì— ìˆëŠ” ëª¨ë“  íŒŒì¼ ìˆ˜ì‹  í•¨ìˆ˜
 int recvFullPlayList(SOCKET sock, _Out_ char playlist[][512], _Out_ double *allRecvBytes);
 
-//¼³Á¤ÆÄÀÏÀ» ºÒ·¯¿À´Â ÇÔ¼ö
+//ì„¤ì •íŒŒì¼ì„ ë¶ˆëŸ¬ì˜¤ëŠ” í•¨ìˆ˜
 int importSettings(_Out_ SETTINGS *sets);
 
-//Àç»ı¸ñ·ÏÀ» ÃÊ±âÈ­ÇÏ´Â ÇÔ¼ö
+//ì¬ìƒëª©ë¡ì„ ì´ˆê¸°í™”í•˜ëŠ” í•¨ìˆ˜
 int initializePlaylist(_Out_ char playlist[][512]);
 
 
-/* MCI Controller.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+/* MCI Controller.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
-//MCI ¿À·ù¸¦ Ãâ·ÂÇÏ´Â ÇÔ¼ö
+//MCI ì˜¤ë¥˜ë¥¼ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
 int printMciError(int errorCode);
 
-//¿Àµğ¿À ÆÄÀÏÀ» ´İ´Â ÇÔ¼ö
+//ì˜¤ë””ì˜¤ íŒŒì¼ì„ ë‹«ëŠ” í•¨ìˆ˜
 int closeAudioFile(MCIDEVICEID deviceID);
 
-//¿Àµğ¿À ÆÄÀÏÀ» Àç»ıÇÏ´Â ÇÔ¼ö
+//ì˜¤ë””ì˜¤ íŒŒì¼ì„ ì¬ìƒí•˜ëŠ” í•¨ìˆ˜
 int playAudioFile(MCIDEVICEID deviceID, MCI_PLAY_PARMS *mciPlay);
 
-//¿Àµğ¿À ÆÄÀÏ Àç»ıÀ» ÀÏ½ÃÁ¤ÁöÇÏ´Â ÇÔ¼ö
-//¸Ş¸ğ¸®¿¡ ¿Àµğ¿À ÆÄÀÏÀ» À¯Áö½ÃÄÑ, ´Ù½ÃÀç»ıÇÒ ¶§ ºü¸£°Ô Àç»ıÇÑ´Ù.
+//ì˜¤ë””ì˜¤ íŒŒì¼ ì¬ìƒì„ ì¼ì‹œì •ì§€í•˜ëŠ” í•¨ìˆ˜
+//ë©”ëª¨ë¦¬ì— ì˜¤ë””ì˜¤ íŒŒì¼ì„ ìœ ì§€ì‹œì¼œ, ë‹¤ì‹œì¬ìƒí•  ë•Œ ë¹ ë¥´ê²Œ ì¬ìƒí•œë‹¤.
 int pauseAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
 
-//¿Àµğ¿À ÆÄÀÏ Àç»ıÀ» Àç°³ÇÏ´Â ÇÔ¼ö
+//ì˜¤ë””ì˜¤ íŒŒì¼ ì¬ìƒì„ ì¬ê°œí•˜ëŠ” í•¨ìˆ˜
 int resumeAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
 
-//¿Àµğ¿À ÆÄÀÏ Àç»ıÀ» Á¤ÁöÇÏ´Â ÇÔ¼ö(mciGeneric = NULL)
-//ÀÏ½ÃÁ¤Áö¿Í ´Ù¸£°Ô ¸Ş¸ğ¸®¿¡¼­ ¿Àµğ¿À ÆÄÀÏÀ» ³»·Á¹ö¸°´Ù.
+//ì˜¤ë””ì˜¤ íŒŒì¼ ì¬ìƒì„ ì •ì§€í•˜ëŠ” í•¨ìˆ˜(mciGeneric = NULL)
+//ì¼ì‹œì •ì§€ì™€ ë‹¤ë¥´ê²Œ ë©”ëª¨ë¦¬ì—ì„œ ì˜¤ë””ì˜¤ íŒŒì¼ì„ ë‚´ë ¤ë²„ë¦°ë‹¤.
 int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
 
-//Àç»ı À§Ä¡¸¦ ÀÌµ¿½ÃÅ°´Â ÇÔ¼ö
+//ì¬ìƒ ìœ„ì¹˜ë¥¼ ì´ë™ì‹œí‚¤ëŠ” í•¨ìˆ˜
 int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl);
 
 
-/* MusicPlayer.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+/* MusicPlayer.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
-//ÀüÃ¼ Àç»ı¸ñ·ÏÀ» Ãâ·ÂÇÑ´Ù.
+//ì „ì²´ ì¬ìƒëª©ë¡ì„ ì¶œë ¥í•œë‹¤.
 int printFullPlaylist(char playlist[][512]);
 
-//Àç»ı¸ñ·Ï¿¡ ÆÄÀÏÀ» Ãß°¡ÇÏ´Â ÇÔ¼ö
+//ì¬ìƒëª©ë¡ì„ ì¶”ê°€í•˜ëŠ” í•¨ìˆ˜
 int addPlaylist(char *fileName, char playlist[][512]);
 
-//Å¬¶óÀÌ¾ğÆ®¿ë À½¾Ç ÇÃ·¹ÀÌ¾î
-int client_MusicPlayer(char playlist[][512]);
+//ì¬ìƒëª©ë¡ì„ ì‚­ì œí•˜ëŠ” í•¨ìˆ˜
+int deletePlaylist(int row, char playlist[][512]);
 
-/* Server.c ÀÇ ÇÔ¼ö ¸ñ·Ï
+//í´ë¼ì´ì–¸íŠ¸ìš© ìŒì•… í”Œë ˆì´ì–´
+int client_MusicPlayer(char *filePath);
+
+/* Server.c ì˜ í•¨ìˆ˜ ëª©ë¡
 --------------------------------------------*/
 int server(SETTINGS sets);
