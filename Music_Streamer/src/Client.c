@@ -94,7 +94,11 @@ int client(SETTINGS sets)
 	double allRecvBytes = 0.0;
 	retval = recvFullPlayList(sock, playlist, &allRecvBytes);
 	if (retval != 0)
+	{
 		printf("전체 재생목록 수신 오류. \n");
+		printf("프로그램을 종료합니다. \n");
+		return 1;
+	}
 	else
 		printf("전체 재생목록 수신 완료! (%0.2lfMB)\n", allRecvBytes / 1024 / 1024);
 
@@ -110,9 +114,16 @@ int client(SETTINGS sets)
 		printf("\n");
 		textcolor(RESET);
 
-		//재생목록이 비었으면 종료한다.
+		//재생목록이 비었으면 채워질 때까지 대기한다.
 		if (strlen(playlist[1]) == 0)
-			break;
+		{
+			textcolor(YELLOW);
+			printf("재생목록이 비었습니다. \n");
+			textcolor(RESET);
+			printf("재생목록이 채워질 때까지 대기합니다. \n");
+			Sleep(1000 * 10);
+			continue;
+		}
 
 		//재생목록에서 1번을 재생한다.
 		retval = client_MusicPlayer(playlist[1]);
@@ -120,7 +131,9 @@ int client(SETTINGS sets)
 			break;
 
 		//재생이 끝나면 재생했던 1번을 지우고 나머지를 위로 올린다.
-		deletePlaylist(1, playlist);
+		retval = deletePlaylist(1, playlist);
+		if (retval != 0)
+			break;
 	}
 	//---------------------------------------------------------------------------------
 

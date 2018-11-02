@@ -124,7 +124,7 @@ int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl
 int printFullPlaylist(char playlist[][512]);
 
 //재생목록을 추가하는 함수
-int addPlaylist(char *fileName, char playlist[][512]);
+int insertPlaylist(char *fileName, char playlist[][512]);
 
 //재생목록을 삭제하는 함수
 int deletePlaylist(int row, char playlist[][512]);

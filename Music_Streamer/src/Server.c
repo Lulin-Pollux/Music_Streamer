@@ -42,8 +42,8 @@ int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
-//재생목록을 관리하는 스레드 
-DWORD WINAPI operatePlaylist(LPVOID playlist)
+//서버를 관리하는 스레드 
+DWORD WINAPI operateServerSystem(LPVOID playlist)
 {
 	int retval;
 
@@ -74,7 +74,7 @@ DWORD WINAPI operatePlaylist(LPVOID playlist)
 			printf(">>> ");
 			char fileName[256];
 			gets_s(fileName, sizeof(fileName));
-			retval = addPlaylist(fileName, playlist);
+			retval = insertPlaylist(fileName, playlist);
 			if (retval == 0)
 				printf("재생목록을 추가했습니다.");
 			break;
@@ -104,6 +104,12 @@ int server(SETTINGS sets)
 	if (listen_sock == INVALID_SOCKET)
 		err_quit("socket()");
 
+	//소켓 옵션 설정
+	BOOL bEnable = TRUE;
+	retval = setsockopt(listen_sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&bEnable, sizeof(bEnable));
+	if (retval == SOCKET_ERROR)
+		err_quit("KeepAlive 소켓 옵션setsockopt()");
+
 	//지역 IP, Port 결정
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
@@ -124,21 +130,25 @@ int server(SETTINGS sets)
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
 
+	//서버가 작동됨을 알린다.
+	textcolor(SKY_BLUE);
+	printf("Music Streamer 서비스를 시작합니다. \n");
+	textcolor(RESET);
+
 	//-----------------------------------------------------------------------
 	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
 	//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
 	//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
 	char playlist[100][512] = { "\0" };
 
-	//재생목록 운영 스레드 생성
-	HANDLE hThread1 = CreateThread(NULL, 0, operatePlaylist, playlist, 0, NULL);
+	//서버 운영 스레드 생성
+	HANDLE hThread1 = CreateThread(NULL, 0, operateServerSystem, playlist, 0, NULL);
 	CloseHandle(hThread1);
 
 	//서버 동작 시작
 	while (1)
 	{
 		//클라이언트의 접속을 기다림
-		printf("\n클라이언트의 접속을 기다리는 중... \n");
 		client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
 		if (client_sock == INVALID_SOCKET)
 			err_quit("accept()");
@@ -148,6 +158,9 @@ int server(SETTINGS sets)
 		retval = server_exchangeIdNickname(client_sock, &sets);
 		if (retval != 0)
 		{
+			textcolor(YELLOW);
+			printf("클라이언트와 아이디, 닉네임을 교환하는데 실패했습니다. \n");
+			textcolor(RESET);
 			closesocket(client_sock);
 			continue;
 		}
@@ -176,7 +189,7 @@ int server(SETTINGS sets)
 	}
 
 
-	printf("서버를 종료합니다. \n");
+	printf("Music Streamer 서비스를 종료합니다. \n");
 	closesocket(listen_sock);
 	WSACleanup();
 	return 0;
