@@ -131,7 +131,7 @@ int client(SETTINGS sets)
 			break;
 
 		//재생이 끝나면 재생했던 1번을 지우고 나머지를 위로 올린다.
-		retval = deletePlaylist(1, playlist);
+		retval = deletePlaylist(sets, 1, playlist);
 		if (retval != 0)
 			break;
 	}

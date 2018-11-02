@@ -127,7 +127,7 @@ int printFullPlaylist(char playlist[][512]);
 int insertPlaylist(char *fileName, char playlist[][512]);
 
 //재생목록을 삭제하는 함수
-int deletePlaylist(int row, char playlist[][512]);
+int deletePlaylist(SETTINGS sets, int row, char playlist[][512]);
 
 //클라이언트용 음악 플레이어
 int client_MusicPlayer(char *filePath);
