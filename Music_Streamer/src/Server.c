@@ -6,6 +6,12 @@
 #include "ClassLinker.h"
 
 
+struct clientCommParms
+{
+	SOCKET sock;
+	PLAYLIST_PTR playlist;
+};
+
 //서버에서 서버와 클라이언트의 아이디, 닉네임을 교환하는 함수
 int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 {
@@ -42,7 +48,7 @@ int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
-//서버를 관리하는 스레드 
+//서버를 관리하는 스레드 함수
 DWORD WINAPI operateServerSystem(LPVOID playlist)
 {
 	int retval;
@@ -90,6 +96,54 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 	return 0;
 }
 
+//클라이언트와 각각 통신하는 스레드 함수
+DWORD WINAPI clientComm(LPVOID arg)
+{
+	int retval;
+
+	//필요한 변수 선언
+	SETTINGS sets;
+	SOCKET sock = ((struct clientCommParms *)arg)->sock;
+	PLAYLIST_PTR playlist = ((struct clientCommParms *)arg)->playlist;
+
+	//클라이언트가 접속할 경우,
+	//서버와 클라이언트의 아이디, 닉네임을 교환한다.
+	retval = server_exchangeIdNickname(sock, &sets);
+	if (retval != 0)
+	{
+		textcolor(YELLOW);
+		printf("클라이언트와 아이디, 닉네임을 교환하는데 실패했습니다. \n");
+		textcolor(RESET);
+		closesocket(sock);
+		return 1;
+	}
+
+	//접속한 클라이언트의 정보 출력
+	textcolor(GREEN);
+	printf("\n클라이언트가 접속하였습니다. \n");
+	textcolor(WHITE);
+	printf("아이디: %d, 닉네임: %s \n\n", sets.client_uid, sets.client_nickName);
+	textcolor(RESET);
+
+	//재생목록에 있는 모든 파일을 전송한다.
+	double allSendBytes = 0.0;
+	retval = sendFullPlaylist(sock, playlist, &allSendBytes);
+	if (retval != 0)
+	{
+		printf("전체 재생목록 전송 오류. \n");
+		closesocket(sock);
+	}
+	else
+	{
+		textcolor(GREEN);
+		printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
+		textcolor(RESET);
+	}
+
+	closesocket(sock);
+	return 0;
+}
+
 //서버 메인 함수
 int server(SETTINGS sets)
 {
@@ -130,10 +184,6 @@ int server(SETTINGS sets)
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
 
-	//서버가 작동됨을 알린다.
-	textcolor(SKY_BLUE);
-	printf("Music Streamer 서비스를 시작합니다. \n\n");
-	textcolor(RESET);
 
 	//-----------------------------------------------------------------------
 	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
@@ -143,7 +193,19 @@ int server(SETTINGS sets)
 
 	//서버 운영 스레드 생성
 	HANDLE hThread1 = CreateThread(NULL, 0, operateServerSystem, playlist, 0, NULL);
-	CloseHandle(hThread1);
+	if (hThread1 == NULL)
+	{
+		printf("서버 운영 스레드 생성에 실패했습니다. \n");
+		printf("프로그램을 종료합니다. \n");
+		return 1;
+	}
+	else
+		CloseHandle(hThread1);
+
+	//서버가 작동됨을 알린다.
+	textcolor(SKY_BLUE);
+	printf("Music Streamer 서비스를 시작합니다. \n\n");
+	textcolor(RESET);
 
 	//서버 동작 시작
 	while (1)
@@ -153,39 +215,17 @@ int server(SETTINGS sets)
 		if (client_sock == INVALID_SOCKET)
 			err_quit("accept()");
 
-		//클라이언트가 접속할 경우,
-		//서버와 클라이언트의 아이디, 닉네임을 교환한다.
-		retval = server_exchangeIdNickname(client_sock, &sets);
-		if (retval != 0)
-		{
-			textcolor(YELLOW);
-			printf("클라이언트와 아이디, 닉네임을 교환하는데 실패했습니다. \n");
-			textcolor(RESET);
+		//구조체 변수에 매개변수를 복사
+		struct clientCommParms parms;
+		parms.sock = client_sock;
+		parms.playlist = playlist;
+
+		//스레드 생성
+		HANDLE hThread1 = CreateThread(NULL, 0, clientComm, &parms, 0, NULL);
+		if (hThread1 == NULL)
 			closesocket(client_sock);
-			continue;
-		}
-
-		//접속한 클라이언트의 정보 출력
-		textcolor(GREEN);
-		printf("\n클라이언트가 접속하였습니다. \n");
-		textcolor(WHITE);
-		printf("아이디: %d, 닉네임: %s \n\n", sets.client_uid, sets.client_nickName);
-		textcolor(RESET);
-
-		//재생목록에 있는 모든 파일을 전송한다.
-		double allSendBytes = 0.0;
-		retval = sendFullPlaylist(client_sock, playlist, &allSendBytes);
-		if (retval != 0)
-		{
-			printf("전체 재생목록 전송 오류. \n");
-			break;
-		}
 		else
-		{
-			textcolor(GREEN);
-			printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
-			textcolor(RESET);
-		}
+			CloseHandle(hThread1);
 	}
 
 

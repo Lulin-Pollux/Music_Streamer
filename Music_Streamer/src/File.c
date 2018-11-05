@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <direct.h>
 #include <WinSock2.h>
 #include <MSWSock.h>
 #include "ClassLinker.h"
@@ -99,6 +100,7 @@ int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvBytes)
 		err_quit("파일 이름recv()");
 
 	//1-1. 수신할 파일을 쓰기모드로 연다.
+	_mkdir("./playQue");
 	FILE *wfp;
 	retval = fopen_s(&wfp, filePath, "wb");
 	if (retval != 0)

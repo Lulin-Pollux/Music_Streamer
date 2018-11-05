@@ -22,6 +22,9 @@ typedef struct settings
 	char client_nickName[50];	//클라이언트의 닉네임
 }SETTINGS;
 
+//재생목록 배열의 포인터
+typedef char (*PLAYLIST_PTR)[512];
+
 //글자색 변경할 때 숫자 대신 사용
 #define RESET 7
 #define DARK_BLUE 1

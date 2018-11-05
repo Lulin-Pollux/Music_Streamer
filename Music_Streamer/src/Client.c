@@ -81,8 +81,10 @@ int client(SETTINGS sets)
 	}
 
 	//접속한 서버의 정보 출력
+	textcolor(SKY_BLUE);
 	printf("서버에 연결했습니다. \n");
 	printf("아이디: %d, 닉네임: %s \n\n", sets.server_uid, sets.server_nickName);
+	textcolor(RESET);
 
 	//재생목록을 만든다. 재생목록 배열은 100 * 512이다.
 	//재생목록 배열에서 0번 행은 쓰지 않는다. 따라서 총 99개의 재생목록을 저장할 수 있다.
@@ -90,6 +92,10 @@ int client(SETTINGS sets)
 	char playlist[100][512] = { "\0" };
 
 	//전체 재생목록을 수신한다.
+	textcolor(YELLOW);
+	printf("전체 재생목록 수신 중. \n");
+	printf("잠시만 기다려 주십시오... \n");
+	textcolor(RESET);
 	double allRecvBytes = 0.0;
 	retval = recvFullPlayList(sock, playlist, &allRecvBytes);
 	if (retval != 0)
