@@ -55,19 +55,20 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 {
 	int retval;
 
+	//명령을 입력받아 처리한다.
 	while (1)
 	{
-		int input = -1;
-		printf("재생목록 검색(1), 재생목록 추가(2), 재생목록 삭제(3): ");
-		scanf_s("%d", &input);
+		char input = getchar();
 		clearInputBuffer();
 
 		switch (input)
 		{
-		case 1:
+		//재생목록 출력
+		case '1':
 			printFullPlaylist(playlist);
 			break;
-		case 2:
+		//재생목록 추가
+		case '2':
 			printf("재생목록에 추가할 파일명을 입력해주세요. \n");
 			printf(">>> ");
 			char fileName[256];
@@ -76,11 +77,19 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 			if (retval == 0)
 				printf("재생목록을 추가했습니다.");
 			break;
-		case 3:
+		//재생목록 삭제
+		case '3':
 			printf("아직 개발 중입니다. \n");
 			break;
-		case 0:
+		//화면 리셋
+		case '0':
 			system("cls");
+			printf("\n");
+			break;
+
+		//오류제어
+		default:
+			printf("알 수 없는 입력입니다. \n");
 			break;
 		}
 	}
