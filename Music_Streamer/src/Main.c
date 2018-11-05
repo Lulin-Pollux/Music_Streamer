@@ -51,6 +51,8 @@ int main()
 		printf("system data dump active user backup active password backup active. \n");
 		textcolor(RESET);
 		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_SYNC);
+		Sleep(1000);
+		return 0;
 	}
 	else if (strcmp(sets.execute_mode, "sstv") == 0)
 	{
@@ -60,6 +62,8 @@ int main()
 		printf("AE99780491B0DE660A09E3CBB87FA4D581F9BD0BAA96C153571C05B52AE4DC906 \n");
 		textcolor(RESET);
 		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE2), SND_RESOURCE | SND_SYNC);
+		Sleep(1000);
+		return 0;
 	}
 	else
 	{
