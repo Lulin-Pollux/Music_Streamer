@@ -5,12 +5,14 @@
 #include <WinSock2.h>
 #include "ClassLinker.h"
 
-
+//스레드 함수의 매개변수용 구조체
 struct clientCommParms
 {
+	SETTINGS sets;
 	SOCKET sock;
 	PLAYLIST_PTR playlist;
 };
+
 
 //서버에서 서버와 클라이언트의 아이디, 닉네임을 교환하는 함수
 int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
@@ -53,16 +55,6 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 {
 	int retval;
 
-	//재생목록을 초기화한다.
-	retval = initializePlaylist(playlist);
-	if (retval != 0)
-	{
-		textcolor(YELLOW);
-		printf("재생목록 초기화 실패. \n");
-		textcolor(RESET);
-		return 1;
-	}
-
 	while (1)
 	{
 		int input = -1;
@@ -102,7 +94,7 @@ DWORD WINAPI clientComm(LPVOID arg)
 	int retval;
 
 	//필요한 변수 선언
-	SETTINGS sets;
+	SETTINGS sets = ((struct clientCommParms *)arg)->sets;
 	SOCKET sock = ((struct clientCommParms *)arg)->sock;
 	PLAYLIST_PTR playlist = ((struct clientCommParms *)arg)->playlist;
 
@@ -191,16 +183,15 @@ int server(SETTINGS sets)
 	//재생목록에서 안쓰는 부분은 반드시 Null값으로 초기화한다.
 	char playlist[100][512] = { "\0" };
 
-	//서버 운영 스레드 생성
-	HANDLE hThread1 = CreateThread(NULL, 0, operateServerSystem, playlist, 0, NULL);
-	if (hThread1 == NULL)
+	//재생목록을 초기화한다.
+	retval = initializePlaylist(playlist);
+	if (retval != 0)
 	{
-		printf("서버 운영 스레드 생성에 실패했습니다. \n");
-		printf("프로그램을 종료합니다. \n");
+		textcolor(YELLOW);
+		printf("재생목록 초기화 실패. \n");
+		textcolor(RESET);
 		return 1;
 	}
-	else
-		CloseHandle(hThread1);
 
 	//서버가 작동됨을 알린다.
 	textcolor(SKY_BLUE);
@@ -217,6 +208,7 @@ int server(SETTINGS sets)
 
 		//구조체 변수에 매개변수를 복사
 		struct clientCommParms parms;
+		parms.sets = sets;
 		parms.sock = client_sock;
 		parms.playlist = playlist;
 

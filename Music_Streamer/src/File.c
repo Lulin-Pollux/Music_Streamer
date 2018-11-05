@@ -19,31 +19,38 @@ int sendFile(SOCKET sock, _In_ char *filePath, _Out_ double *sendBytes)
 	//1. 파일 경로를 전송한다. (512바이트 고정 길이)
 	retval = send(sock, filePath, 512, 0);
 	if (retval == SOCKET_ERROR)
-		err_quit("파일 이름send()");
+	{
+		err_display("파일 경로send()");
+		return 1;
+	}
 
 	//1-1. 보낼 파일을 연다.
-	HANDLE hFile = CreateFileA(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFileA(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		fprintf(stderr, "파일 열기 CreateFile() 오류.\n");
-		system("pause");
-		exit(1);
+		err_display("보낼 파일 열기 CreateFile()");
+		return 1;
 	}
 
 	//2. 파일 크기를 전송한다. (4바이트 고정 길이)
 	unsigned int fileSize = GetFileSize(hFile, NULL);
 	retval = send(sock, (char*)&fileSize, sizeof(int), 0);
 	if (retval == SOCKET_ERROR)
-		err_quit("파일 크기send()");
+	{
+		err_display("파일 크기send()");
+		return 1;
+	}
 
 	//3. 파일 데이터를 전송한다. (가변 길이)
 	retval = TransmitFile(sock, hFile, 0, 0, NULL, NULL, 0);
-	if (retval == FALSE)
+	if (retval != TRUE)
 	{
-		fprintf(stderr, "파일 데이터 전송 TransmitFile() 오류.\n");
-		system("pause");
-		exit(1);
+		err_display("파일 데이터 전송 TransmitFile()");
+		return 1;
 	}
+
+	//보낸 파일을 닫는다.
+	CloseHandle(hFile);
 
 	//전송 결과 내보내기
 	*sendBytes = fileSize;
@@ -97,7 +104,10 @@ int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvBytes)
 	//1. 파일 경로를 수신한다. (512바이트 고정 길이)
 	retval = recv(sock, filePath, 512, MSG_WAITALL);
 	if (retval == SOCKET_ERROR)
-		err_quit("파일 이름recv()");
+	{
+		err_display("파일 경로recv()");
+		return 1;
+	}
 
 	//1-1. 수신할 파일을 쓰기모드로 연다.
 	_mkdir("./playQue");
@@ -106,29 +116,33 @@ int recvFile(SOCKET sock, _Out_ char *filePath, _Out_ double *recvBytes)
 	if (retval != 0)
 	{
 		perror("파일 열기fopen_s()");
-		system("pause");
-		exit(1);
+		return 1;
 	}
 
 	//2. 파일 크기를 수신한다. (4바이트 고정 길이)
 	unsigned int fileSize = 0;
 	retval = recv(sock, (char*)&fileSize, sizeof(int), MSG_WAITALL);
 	if (retval == SOCKET_ERROR)
-		err_quit("파일 크기recv()");
+	{
+		err_display("파일 크기recv()");
+		return 1;
+	}
 
 	//3. 파일 데이터를 수신한다.
 	char *buffer = (char*)calloc(fileSize, sizeof(char));
 	retval = recv(sock, buffer, fileSize, MSG_WAITALL);
 	if (retval == SOCKET_ERROR)
+	{
 		err_quit("파일 데이터recv()");
+		return 1;
+	}
 
 	//3-1. 수신한 데이터를 파일에 쓴다.
 	fwrite(buffer, 1, retval, wfp);
 	if (ferror(wfp))
 	{
 		perror("파일 쓰기fwrite()");
-		system("pause");
-		exit(1);
+		return 1;
 	}
 
 	//파일 포인터, 동적 메모리 반환
