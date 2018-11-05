@@ -97,25 +97,43 @@ int initializePlaylist(_Out_ char playlist[][512]);
 //MCI 오류를 출력하는 함수
 int printMciError(int errorCode);
 
+//각 모드에 알맞는 설명을 출력하는 함수
+int printModeDescription(int mode);
+
+//오디오 파일을 여는 함수
+int openAudioFile(_Out_ MCIDEVICEID *deviceID, MCI_OPEN_PARMS mciOpenParms);
+
 //오디오 파일을 닫는 함수
 int closeAudioFile(MCIDEVICEID deviceID);
 
 //오디오 파일을 재생하는 함수
-int playAudioFile(MCIDEVICEID deviceID, MCI_PLAY_PARMS *mciPlay);
+int playAudioFile(MCIDEVICEID deviceID, MCI_PLAY_PARMS mciPlayParms);
 
 //오디오 파일 재생을 일시정지하는 함수
-//메모리에 오디오 파일을 유지시켜, 다시재생할 때 빠르게 재생한다.
-int pauseAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
+//메모리에 오디오 파일을 유지시켜, 다시 재생할 때 빠르게 재생한다.
+int pauseAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS mciGenericParms);
 
 //오디오 파일 재생을 재개하는 함수
-int resumeAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
+int resumeAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS mciGenericParms);
 
-//오디오 파일 재생을 정지하는 함수(mciGeneric = NULL)
-//일시정지와 다르게 메모리에서 오디오 파일을 내려버린다.
-int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS *mciGeneric);
+//오디오 파일 재생을 일시정지하는 함수
+//메모리에서 오디오 파일을 내려버린다.
+int stopAudioFile(MCIDEVICEID deviceID, MCI_GENERIC_PARMS mciGenericParms);
 
-//재생 위치를 이동시키는 함수
-int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS *mciSeek, int seekControl);
+//시간 형식을 설정하는 함수
+int setTimeFormat(MCIDEVICEID deviceID, MCI_SET_PARMS mciSetParms, DWORD timeFormat);
+
+//재생 위치를 이동시키는 함수 (단위: Miliseconds)
+int seekAudioFile(MCIDEVICEID deviceID, MCI_SEEK_PARMS mciSeekParms, DWORD seekTo_ms);
+
+//현재 상태를 가져오는 함수
+int getCurrentMode(MCIDEVICEID deviceID, MCI_STATUS_PARMS mciStatusParms, _Out_ int *mode);
+
+//재생할 파일의 총 길이를 가져오는 함수
+int getAudioFileLength(MCIDEVICEID deviceID, MCI_STATUS_PARMS mciStatusParms, _Out_ unsigned int *totalLen_ms);
+
+//현재 재생위치를 가져오는 함수
+int getCurrentPosition(MCIDEVICEID deviceID, MCI_STATUS_PARMS mciStatusParms, _Out_ unsigned int *position_ms);
 
 
 /* MusicPlayer.c 의 함수 목록
@@ -131,6 +149,7 @@ int deletePlaylist(SETTINGS sets, int row, char playlist[][512]);
 
 //클라이언트용 음악 플레이어
 int client_MusicPlayer(char *filePath);
+
 
 /* Server.c 의 함수 목록
 --------------------------------------------*/

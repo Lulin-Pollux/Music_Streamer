@@ -9,7 +9,7 @@ int main()
 	int retval;
 
 	//콘솔창 초기화
-	SetConsoleTitle("Music Radio");
+	SetConsoleTitle("Music Streamer");
 	system("mode con cols=90 lines=35");
 	setScreenBufferSize(90, 9000);
 

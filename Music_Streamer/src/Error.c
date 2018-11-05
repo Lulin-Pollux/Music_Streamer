@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <WinSock2.h>
+#include "ClassLinker.h"
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
@@ -10,6 +11,7 @@ void err_quit(char *msg)
 		NULL, WSAGetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBeep(MB_ICONERROR);
 	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
 	LocalFree(lpMsgBuf);
 	exit(1);
@@ -24,6 +26,8 @@ void err_display(char *msg)
 		NULL, WSAGetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR)&lpMsgBuf, 0, NULL);
+	textcolor(YELLOW);
 	printf("[%s] %s", msg, (char *)lpMsgBuf);
+	textcolor(RESET);
 	LocalFree(lpMsgBuf);
 }

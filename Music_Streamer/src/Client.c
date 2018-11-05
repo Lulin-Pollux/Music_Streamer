@@ -42,7 +42,6 @@ int client_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
-
 //클라이언트 메인 함수
 int client(SETTINGS sets)
 {
@@ -121,7 +120,7 @@ int client(SETTINGS sets)
 			printf("재생목록이 비었습니다. \n");
 			textcolor(RESET);
 			printf("재생목록이 채워질 때까지 대기합니다. \n");
-			Sleep(1000 * 10);
+			Sleep(1000);
 			continue;
 		}
 
@@ -141,6 +140,7 @@ int client(SETTINGS sets)
 	//서버와 연결을 종료한다.
 	closesocket(sock);
 
+	//프로그램을 종료한다.
 	printf("\n프로그램을 종료합니다. \n");
 	WSACleanup();
 	return 0;

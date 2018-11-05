@@ -132,7 +132,7 @@ int server(SETTINGS sets)
 
 	//서버가 작동됨을 알린다.
 	textcolor(SKY_BLUE);
-	printf("Music Streamer 서비스를 시작합니다. \n");
+	printf("Music Streamer 서비스를 시작합니다. \n\n");
 	textcolor(RESET);
 
 	//-----------------------------------------------------------------------
