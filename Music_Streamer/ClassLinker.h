@@ -44,7 +44,11 @@ typedef struct settings
 
 /* Client.c 의 함수 목록
 --------------------------------------------*/
+//클라이언트 메인 함수
 int client(SETTINGS sets);
+
+//서버에서 서버와 클라이언트의 아이디, 닉네임을 교환하는 함수
+int client_exchangeIdNickname(SOCKET sock, SETTINGS *sets);
 
 
 /* Console.c 의 함수 목록
@@ -147,10 +151,20 @@ int insertPlaylist(char *fileName, char playlist[][512]);
 //재생목록을 삭제하는 함수
 int deletePlaylist(SETTINGS sets, int row, char playlist[][512]);
 
+//재생상태를 보여주는 함수
+int showPlayStatus(MCIDEVICEID deviceID, MCI_STATUS_PARMS mciStatusParms);
+
+//서버용 음악 플레이어
+int server_MusicPlayer();
+
 //클라이언트용 음악 플레이어
 int client_MusicPlayer(char *filePath);
 
 
 /* Server.c 의 함수 목록
 --------------------------------------------*/
+//서버에서 서버와 클라이언트의 아이디, 닉네임을 교환하는 함수
+int server_exchangeIdNickname(SOCKET sock, SETTINGS *sets);
+
+//서버 메인 함수
 int server(SETTINGS sets);
