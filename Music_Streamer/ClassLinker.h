@@ -152,13 +152,10 @@ int printFullPlaylist(char playlist[][512]);
 int insertPlaylist(char *fileName, char playlist[][512]);
 
 //재생목록을 삭제하는 함수
-int deletePlaylist(SETTINGS sets, int row, char playlist[][512]);
+int deletePlaylist(int row, char playlist[][512]);
 
 //재생상태를 보여주는 함수
 int showPlayStatus(MCIDEVICEID deviceID, MCI_STATUS_PARMS mciStatusParms);
-
-//서버용 음악 플레이어
-int server_MusicPlayer();
 
 //클라이언트용 음악 플레이어
 int client_MusicPlayer(char *filePath);

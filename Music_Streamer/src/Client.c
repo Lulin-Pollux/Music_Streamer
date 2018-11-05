@@ -135,8 +135,16 @@ int client(SETTINGS sets)
 		if (retval != 0)
 			break;
 
+		//지우는 곳의 파일을 삭제한다.
+		retval = remove(playlist[1]);
+		if (retval != 0)
+		{
+			printf("재생파일 삭제에 실패했습니다. \n");
+			return 1;
+		}
+
 		//재생이 끝나면 재생했던 1번을 지우고 나머지를 위로 올린다.
-		retval = deletePlaylist(sets, 1, playlist);
+		retval = deletePlaylist(1, playlist);
 		if (retval != 0)
 			break;
 	}

@@ -77,38 +77,15 @@ int insertPlaylist(char *fileName, char playlist[][512])
 }
 
 //재생목록을 삭제하는 함수
-int deletePlaylist(SETTINGS sets, int row, char playlist[][512])
+int deletePlaylist(int row, char playlist[][512])
 {
-	int retval;
+	//지우는 곳을 기준으로 맨 끝까지 각각 1칸씩 올린다.
+	for (int i = row; i <= 98; i++)
+		strcpy_s(playlist[i], 512, playlist[i + 1]);
 
-	if (strcmp(sets.execute_mode, "server") == 0)
-	{
-		//지우는 곳을 기준으로 맨 끝까지 각각 1칸씩 올린다.
-		for (int i = row; i <= 98; i++)
-			strcpy_s(playlist[i], 512, playlist[i + 1]);
-
-		//맨 끝행을 지운다.
-		for (int i = 0; i < 512; i++)
-			playlist[99][i] = '\0';
-	}
-	else
-	{
-		//지우는 곳의 파일을 삭제한다.
-		retval = remove(playlist[row]);
-		if (retval != 0)
-		{
-			printf("재생목록 삭제에 실패했습니다. \n");
-			return 1;
-		}
-
-		//지우는 곳을 기준으로 맨 끝까지 각각 1칸씩 올린다.
-		for (int i = row; i <= 98; i++)
-			strcpy_s(playlist[i], 512, playlist[i + 1]);
-
-		//맨 끝행을 지운다.
-		for (int i = 0; i < 512; i++)
-			playlist[99][i] = '\0';
-	}
+	//맨 끝행을 지운다.
+	for (int i = 0; i < 512; i++)
+		playlist[99][i] = '\0';
 
 	return 0;
 }
@@ -163,12 +140,6 @@ int showPlayStatus(MCIDEVICEID deviceID, MCI_STATUS_PARMS mciStatusParms)
 	return 0;
 }
 
-//서버용 음악 플레이어
-int server_MusicPlayer()
-{
-	return 0;
-}
-
 //클라이언트용 음악 플레이어
 int client_MusicPlayer(char *filePath)
 {
@@ -199,7 +170,6 @@ int client_MusicPlayer(char *filePath)
 	else
 	{
 		printf("해당 파일형식은 지원하지 않습니다. \n");
-		system("pause");
 		return 1;
 	}
 

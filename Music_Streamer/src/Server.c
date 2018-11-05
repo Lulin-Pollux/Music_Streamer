@@ -193,6 +193,16 @@ int server(SETTINGS sets)
 		return 1;
 	}
 
+	//서버를 관리하는 스레드 함수
+	HANDLE hThread1 = CreateThread(NULL, 0, operateServerSystem, playlist, 0, NULL);
+	if (hThread1 == NULL)
+	{
+		printf("스레드 생성 실패");
+		return 1;
+	}
+	else
+		CloseHandle(hThread1);
+
 	//서버가 작동됨을 알린다.
 	textcolor(SKY_BLUE);
 	printf("Music Streamer 서비스를 시작합니다. \n\n");
@@ -215,7 +225,10 @@ int server(SETTINGS sets)
 		//스레드 생성
 		HANDLE hThread1 = CreateThread(NULL, 0, clientComm, &parms, 0, NULL);
 		if (hThread1 == NULL)
+		{
+			printf("스레드 생성 실패");
 			closesocket(client_sock);
+		}
 		else
 			CloseHandle(hThread1);
 	}
