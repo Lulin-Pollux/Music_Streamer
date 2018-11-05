@@ -127,6 +127,7 @@ DWORD WINAPI clientComm(LPVOID arg)
 	textcolor(RESET);
 
 	//재생목록에 있는 모든 파일을 전송한다.
+	printf("전체 재생목록 전송 중... \n");
 	double allSendBytes = 0.0;
 	retval = sendFullPlaylist(sock, playlist, &allSendBytes);
 	if (retval != 0)
