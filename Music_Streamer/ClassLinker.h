@@ -53,6 +53,9 @@ int client(SETTINGS sets);
 //서버에서 서버와 클라이언트의 아이디, 닉네임을 교환하는 함수
 int client_exchangeIdNickname(SOCKET sock, SETTINGS *sets);
 
+//재생목록을 새로고침하는 함수
+int refreshPlaylist(SOCKET sock, char playlist[][512]);
+
 
 /* Console.c 의 함수 목록
 --------------------------------------------*/

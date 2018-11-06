@@ -82,13 +82,21 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 			gets_s(fileName, sizeof(fileName));
 			retval = insertPlaylist(fileName, playlist);
 			if (retval == 0)
+			{
+				textcolor(GREEN);
 				printf("재생목록을 추가했습니다. \n");
+				textcolor(RESET);
+			}
 			break;
 		//재생목록 변경
 		case 3:
 			retval = updatePlaylist(playlist);
 			if (retval == 0)
+			{
+				textcolor(GREEN);
 				printf("재생목록을 변경했습니다. \n");
+				textcolor(RESET);
+			}
 			break;
 		//재생목록 삭제
 		case 4:
@@ -99,11 +107,16 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 			clearInputBuffer();
 			retval = deletePlaylist(row, playlist);
 			if (retval == 0)
+			{
+				textcolor(GREEN);
 				printf("%d행을 삭제했습니다. \n", row);
+				textcolor(RESET);
+			}
 			break;
 		//화면 리셋
 		case 0:
 			system("cls");
+			setScreenBufferSize(90, 9000);
 			printf("\n");
 			printf("재생목록: 1(출력), 2(추가), 3(변경), 4(삭제) \n");
 			printf("자세한 설명은 매뉴얼을 참고하세요. \n");
@@ -178,7 +191,7 @@ DWORD WINAPI clientComm(LPVOID arg)
 		}
 
 		//재생목록 새로고침 요청 처리
-		if (strcmp(request, "playlist refresh") == 0)
+		if (strcmp(request, "refresh playlist") == 0)
 		{
 			//재생목록을 전송한다. (51200바이트 고정 길이)
 			retval = send(sock, playlist[0], 51200, 0);
