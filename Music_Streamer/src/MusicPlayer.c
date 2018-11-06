@@ -86,7 +86,9 @@ int updatePlaylist(char playlist[][512])
 	clearInputBuffer();
 	if (!(row >= 1 && row <= 99))
 	{
+		textcolor(YELLOW);
 		printf("잘못된 행 입력입니다. \n");
+		textcolor(RESET);
 		return 1;
 	}
 	
@@ -125,12 +127,16 @@ int deletePlaylist(int row, char playlist[][512])
 	//오류제어
 	if (!(row >= 1 && row <= 99))
 	{
+		textcolor(YELLOW);
 		printf("잘못된 행 입력입니다. \n");
+		textcolor(RESET);
 		return 1;
 	}
 	else if (strlen(playlist[row]) == 0)
 	{
+		textcolor(YELLOW);
 		printf("해당 행에는 아무것도 없습니다. \n");
+		textcolor(RESET);
 		return 1;
 	}
 
