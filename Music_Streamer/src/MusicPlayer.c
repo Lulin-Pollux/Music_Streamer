@@ -74,6 +74,51 @@ int insertPlaylist(char *fileName, char playlist[][512])
 	return 0;
 }
 
+//재생목록을 변경하는 함수
+int updatePlaylist(char playlist[][512])
+{
+	int retval;
+
+	//변경을 원하는 행을 입력받는다.
+	printf("변경할 행을 입력: ");
+	int row;
+	scanf_s("%d", &row);
+	clearInputBuffer();
+	if (!(row >= 1 && row <= 99))
+	{
+		printf("잘못된 행 입력입니다. \n");
+		return 1;
+	}
+	
+	//변경해 넣을 파일명을 입력받는다.
+	printf("변경해 넣을 파일명 입력: ");
+	char fileName[256];
+	gets_s(fileName, sizeof(fileName));
+
+	//앞에 상대경로를 붙이고 뒤에 파일명을 붙인다.
+	char filePath[512];
+	strcpy_s(filePath, sizeof(filePath), "./playQue/");
+	strcat_s(filePath, sizeof(filePath), fileName);
+
+	//파일이름에 해당하는 파일이 존재하는지 검사한다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, filePath, "r");
+	if (retval != 0)
+	{
+		textcolor(YELLOW);
+		printf("해당 파일이 없습니다. \n");
+		textcolor(RESET);
+		return 1;
+	}
+	else
+		fclose(rfp);
+
+	//재생목록을 변경한다.
+	strcpy_s(playlist[row], 512, filePath);
+
+	return 0;
+}
+
 //재생목록을 삭제하는 함수
 int deletePlaylist(int row, char playlist[][512])
 {

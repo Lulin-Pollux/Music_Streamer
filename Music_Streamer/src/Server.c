@@ -55,21 +55,27 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 {
 	int retval;
 
+	//사용법 출력
+	printf("\n");
+	printf("재생목록: 1(출력), 2(추가), 3(변경), 4(삭제) \n");
+	printf("자세한 설명은 매뉴얼을 참고하세요. \n");
+
 	//명령을 입력받아 처리한다.
 	while (1)
 	{
 		printf("\n");
-		char input = getchar();
+		int input;
+		scanf_s("%d", &input);
 		clearInputBuffer();
 
 		switch (input)
 		{
 		//재생목록 출력
-		case '1':
+		case 1:
 			printFullPlaylist(playlist);
 			break;
 		//재생목록 추가
-		case '2':
+		case 2:
 			printf("재생목록에 추가할 파일명을 입력해주세요. \n");
 			printf(">>> ");
 			char fileName[256];
@@ -78,8 +84,14 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 			if (retval == 0)
 				printf("재생목록을 추가했습니다. \n");
 			break;
+		//재생목록 변경
+		case 3:
+			retval = updatePlaylist(playlist);
+			if (retval == 0)
+				printf("재생목록을 변경했습니다. \n");
+			break;
 		//재생목록 삭제
-		case '3':
+		case 4:
 			printf("재생목록에서 삭제할 행을 입력해주세요. \n");
 			printf(">>> ");
 			int row;
@@ -90,9 +102,11 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 				printf("%d행을 삭제했습니다. \n", row);
 			break;
 		//화면 리셋
-		case '0':
+		case 0:
 			system("cls");
 			printf("\n");
+			printf("재생목록: 1(출력), 2(추가), 3(삭제) \n");
+			printf("자세한 설명은 매뉴얼을 참고하세요. \n");
 			break;
 
 		//오류제어
@@ -109,6 +123,7 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 DWORD WINAPI clientComm(LPVOID arg)
 {
 	int retval;
+	char buffer[512];
 
 	//필요한 변수 선언
 	SETTINGS sets = ((struct clientCommParms *)arg)->sets;
