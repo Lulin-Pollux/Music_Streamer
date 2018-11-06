@@ -115,8 +115,9 @@ int client(SETTINGS sets)
 
 		//전체 재생목록을 출력한다.
 		textcolor(WHITE);
-		printFullPlaylist(playlist);
 		printf("\n");
+		printFullPlaylist(playlist);
+		printf("\n\n");
 		textcolor(RESET);
 
 		//재생목록이 비었으면 채워질 때까지 대기한다.

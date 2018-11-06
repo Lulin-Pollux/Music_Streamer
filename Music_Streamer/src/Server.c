@@ -58,6 +58,7 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 	//명령을 입력받아 처리한다.
 	while (1)
 	{
+		printf("\n");
 		char input = getchar();
 		clearInputBuffer();
 
@@ -75,11 +76,18 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 			gets_s(fileName, sizeof(fileName));
 			retval = insertPlaylist(fileName, playlist);
 			if (retval == 0)
-				printf("재생목록을 추가했습니다.");
+				printf("재생목록을 추가했습니다. \n");
 			break;
 		//재생목록 삭제
 		case '3':
-			printf("아직 개발 중입니다. \n");
+			printf("재생목록에서 삭제할 행을 입력해주세요. \n");
+			printf(">>> ");
+			int row;
+			scanf_s("%d", &row);
+			clearInputBuffer();
+			retval = deletePlaylist(row, playlist);
+			if (retval == 0)
+				printf("%d행을 삭제했습니다. \n", row);
 			break;
 		//화면 리셋
 		case '0':
@@ -215,7 +223,7 @@ int server(SETTINGS sets)
 
 	//서버가 작동됨을 알린다.
 	textcolor(SKY_BLUE);
-	printf("Music Streamer 서비스를 시작합니다. \n\n");
+	printf("Music Streamer 서비스를 시작합니다. \n");
 	textcolor(RESET);
 
 	//서버 동작 시작

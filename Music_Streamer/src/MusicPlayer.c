@@ -7,7 +7,6 @@
 //전체 재생목록을 출력한다.
 int printFullPlaylist(char playlist[][512])
 {
-	printf("\n");
 	printf("\t 재생목록 \n");
 	printf("--------------------------------\n");
 	for (int i = 1; i < 100; i++)
@@ -20,7 +19,6 @@ int printFullPlaylist(char playlist[][512])
 			printf("%d. %s\n", i, pos + 1);
 		}
 	}
-	printf("\n");
 
 	return 0;
 }
@@ -79,6 +77,18 @@ int insertPlaylist(char *fileName, char playlist[][512])
 //재생목록을 삭제하는 함수
 int deletePlaylist(int row, char playlist[][512])
 {
+	//오류제어
+	if (!(row >= 1 && row <= 99))
+	{
+		printf("잘못된 행 입력입니다. \n");
+		return 1;
+	}
+	else if (strlen(playlist[row]) == 0)
+	{
+		printf("해당 행에는 아무것도 없습니다. \n");
+		return 1;
+	}
+
 	//지우는 곳을 기준으로 맨 끝까지 각각 1칸씩 올린다.
 	for (int i = row; i <= 98; i++)
 		strcpy_s(playlist[i], 512, playlist[i + 1]);
