@@ -105,7 +105,7 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 		case 0:
 			system("cls");
 			printf("\n");
-			printf("재생목록: 1(출력), 2(추가), 3(삭제) \n");
+			printf("재생목록: 1(출력), 2(추가), 3(변경), 4(삭제) \n");
 			printf("자세한 설명은 매뉴얼을 참고하세요. \n");
 			break;
 
@@ -163,6 +163,40 @@ DWORD WINAPI clientComm(LPVOID arg)
 		textcolor(GREEN);
 		printf("전체 재생목록 전송 완료! (%0.2lfMB) \n", allSendBytes / 1024 / 1024);
 		textcolor(RESET);
+	}
+
+	//클라이언트에서 보내는 요청을 처리한다.
+	char request[50];
+	while (1)
+	{
+		//요청 메시지 수신
+		retval = recv(sock, request, sizeof(request), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("클라이언트 요청recv()");
+			break;
+		}
+
+		//재생목록 새로고침 요청 처리
+		if (strcmp(request, "playlist refresh") == 0)
+		{
+			//재생목록을 전송한다. (51200바이트 고정 길이)
+			retval = send(sock, playlist[0], 51200, 0);
+			if (retval == SOCKET_ERROR)
+			{
+				err_display("재생목록 send()");
+				return 1;
+			}
+		}
+		else if (strcmp(request, "download playlist") == 0)
+		{
+			//다운로드를 원하는 재생목록을 수신
+			recv(sock, buffer, 512, MSG_WAITALL);
+			
+			//해당 파일을 전송한다.
+			double sendBytes;
+			sendFile(sock, buffer, &sendBytes);
+		}
 	}
 
 	closesocket(sock);

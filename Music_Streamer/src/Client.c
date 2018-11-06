@@ -42,6 +42,11 @@ int client_exchangeIdNickname(SOCKET sock, SETTINGS *sets)
 	return 0;
 }
 
+int playlistRefresh()
+{
+
+}
+
 //클라이언트 메인 함수
 int client(SETTINGS sets)
 {
@@ -136,7 +141,7 @@ int client(SETTINGS sets)
 		if (retval != 0)
 			break;
 
-		//지우는 곳의 파일을 삭제한다.
+		//재생을 완료한 파일을 삭제한다.
 		retval = remove(playlist[1]);
 		if (retval != 0)
 		{
@@ -144,10 +149,49 @@ int client(SETTINGS sets)
 			return 1;
 		}
 
-		//재생이 끝나면 재생했던 1번을 지우고 나머지를 위로 올린다.
-		retval = deletePlaylist(1, playlist);
-		if (retval != 0)
-			break;
+		//서버에게 재생목록 새로고침을 요청한다.
+		char request[50] = { "playlist refresh" };
+		retval = send(sock, request, (int)strlen(request) + 1, 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("재생목록 send()");
+			return 1;
+		}
+
+		//서버로부터 재생목록을 다시 받아온다.
+		retval = recv(sock, playlist[0], 51200, MSG_WAITALL);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("재생목록 recv()");
+			return 1;
+		}
+
+		//재생목록에서 없는 파일은 서버로부터 받아온다.
+		for (int i = 1; i < 100; i++)
+		{
+			//i번째 재생목록이 비었으면 반복종료
+			if (strlen(playlist[i]) == 0)
+				break;
+
+			//i번째 재생목록의 파일이 없는지 검사
+			FILE *rfp;
+			retval = fopen_s(&rfp, playlist[1], "r");
+			if (retval != 0)
+			{
+				//재생목록 다운로드 요청
+				strcpy_s(request, sizeof(request), "download playlist");
+				send(sock, request, (int)strlen(request) + 1, 0);
+
+				//다운로드 받을 재생목록 전송
+				send(sock, playlist[i], 512, 0);
+
+				//파일을 다운로드 받음
+				double recvBytes;
+				recvFile(sock, playlist[i], &recvBytes);
+			}
+			else
+				fclose(rfp);
+		}
 	}
 	//---------------------------------------------------------------------------------
 
