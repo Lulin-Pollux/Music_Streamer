@@ -24,7 +24,7 @@ int main()
 		printf("설정파일을 복구해주세요. \n");
 		textcolor(RESET);
 		system("pause");
-		exit(1);
+		return 1;
 	}
 
 	//설정에서 실행모드가 서버면 서버실행, 아니면 클라이언트 실행

@@ -16,6 +16,8 @@ typedef struct settings
 	char server_ip[16];			//서버의 IP 주소
 	int server_mainPort;		//서버의 주 포트
 	int server_requestPort;		//서버의 풀리퀘 포트
+	char multichat_ip[16];		//멀티채팅 IP 주소
+	int multichat_port;			//멀티채팅 포트
 	int server_uid;				//서버의 아이디
 	char server_nickName[50];	//서버의 닉네임
 	int client_uid;				//클라이언트의 아이디

@@ -241,6 +241,10 @@ int importSettings(_Out_ SETTINGS *sets)
 				sets->server_mainPort = atoi(pos + 1);
 			else if (strncmp(buffer, "server_requestPort", pos - buffer) == 0)
 				sets->server_requestPort = atoi(pos + 1);
+			else if (strncmp(buffer, "multichat_ip", pos - buffer) == 0)
+				strcpy_s(sets->multichat_ip, sizeof(sets->multichat_ip), pos + 1);
+			else if (strncmp(buffer, "multichat_port", pos - buffer) == 0)
+				sets->multichat_port = atoi(pos + 1);
 			else if (strncmp(buffer, "server_uid", pos - buffer) == 0)
 				sets->server_uid = atoi(pos + 1);
 			else if (strncmp(buffer, "server_nickName", pos - buffer) == 0)
