@@ -111,6 +111,10 @@ int client(SETTINGS sets)
 {
 	int retval;
 
+	//창크기 조절
+	system("mode con cols=75 lines=25");
+	setScreenBufferSize(75, 1000);
+
 	//윈속 초기화
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2, 2), &wsa);
@@ -176,7 +180,7 @@ int client(SETTINGS sets)
 	{
 		//콘솔 창 지움
 		system("cls");
-		setScreenBufferSize(90, 9000);
+		setScreenBufferSize(75, 1000);
 
 		//전체 재생목록을 출력한다.
 		textcolor(WHITE);

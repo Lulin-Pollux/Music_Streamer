@@ -116,7 +116,7 @@ DWORD WINAPI operateServerSystem(LPVOID playlist)
 		//화면 리셋
 		case 0:
 			system("cls");
-			setScreenBufferSize(90, 9000);
+			setScreenBufferSize(80, 9000);
 			printf("\n");
 			printf("재생목록: 1(출력), 2(추가), 3(변경), 4(삭제) \n");
 			printf("자세한 설명은 매뉴얼을 참고하세요. \n");

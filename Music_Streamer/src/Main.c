@@ -10,8 +10,8 @@ int main()
 
 	//콘솔창 초기화
 	SetConsoleTitle("Music Streamer");
-	system("mode con cols=90 lines=35");
-	setScreenBufferSize(90, 9000);
+	system("mode con cols=80 lines=35");
+	setScreenBufferSize(80, 9000);
 
 	//프로그램의 설정을 불러온다.
 	SETTINGS sets;  //프로그램의 설정을 저장할 객체
@@ -47,8 +47,9 @@ int main()
 	{
 		textcolor(GREEN);
 		printf("\n");
-		printf("interior transmission active external data line active message digest active. \n");
-		printf("system data dump active user backup active password backup active. \n");
+		printf("interior transmission active external data line active message digest active.");
+		printf("system data dump active user backup active password backup active.");
+		printf("\n");
 		textcolor(RESET);
 		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE1), SND_RESOURCE | SND_SYNC);
 		Sleep(1000);
@@ -59,7 +60,8 @@ int main()
 		textcolor(SKY_BLUE);
 		printf("\n");
 		printf("FB00BF4049C0A6C46D101FF11AF2C73A957D139D761F437877160DF535D09C5");
-		printf("AE99780491B0DE660A09E3CBB87FA4D581F9BD0BAA96C153571C05B52AE4DC906 \n");
+		printf("AE99780491B0DE660A09E3CBB87FA4D581F9BD0BAA96C153571C05B52AE4DC906");
+		printf("\n");
 		textcolor(RESET);
 		sndPlaySound(MAKEINTRESOURCE(IDR_WAVE2), SND_RESOURCE | SND_SYNC);
 		Sleep(1000);
