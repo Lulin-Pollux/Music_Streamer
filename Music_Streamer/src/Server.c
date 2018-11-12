@@ -236,6 +236,12 @@ int server(SETTINGS sets)
 	if (retval == SOCKET_ERROR)
 		err_quit("KeepAlive 소켓 옵션setsockopt()");
 
+	//IP, Port 재사용 설정
+	BOOL optval = TRUE;
+	retval = setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, (char*)&optval, sizeof(optval));
+	if (retval == SOCKET_ERROR)
+		err_quit("ReUseAddr 소켓 옵션setsockopt()");
+
 	//지역 IP, Port 결정
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
