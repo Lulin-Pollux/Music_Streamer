@@ -27,6 +27,23 @@ int main()
 		return 1;
 	}
 
+	//멀티채팅 프로그램을 실행한다.
+	FILE *rfp;
+	retval = fopen_s(&rfp, "MultiChat.exe", "r");
+	if (retval != 0)
+	{
+		textcolor(YELLOW);
+		printf("멀티채팅 프로그램이 없습니다. \n");
+		textcolor(RESET);
+		system("pause");
+		return 1;
+	}
+	else
+	{
+		fclose(rfp);
+		system("start cmd /c MultiChat.exe");
+	}
+
 	//설정에서 실행모드가 서버면 서버실행, 아니면 클라이언트 실행
 	//만약, morse나 sstv면 이스터에그 실행
 	if (strcmp(sets.execute_mode, "server") == 0)
