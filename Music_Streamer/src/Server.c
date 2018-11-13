@@ -156,10 +156,8 @@ DWORD WINAPI clientComm(LPVOID arg)
 	}
 
 	//접속한 클라이언트의 정보 출력
-	textcolor(GREEN);
-	printf("\n클라이언트가 접속하였습니다. \n");
-	textcolor(WHITE);
-	printf("아이디: %d, 닉네임: %s \n\n", sets.client_uid, sets.client_nickName);
+	textcolor(YELLOW);
+	printf("%s(%d)님이 접속했습니다. \n", sets.client_nickName, sets.client_uid);
 	textcolor(RESET);
 
 	//재생목록에 있는 모든 파일을 전송한다.
@@ -186,7 +184,9 @@ DWORD WINAPI clientComm(LPVOID arg)
 		retval = recv(sock, request, sizeof(request), 0);
 		if (retval == SOCKET_ERROR)
 		{
-			err_display("클라이언트 요청recv()");
+			textcolor(YELLOW);
+			printf("%s(%d)님이 나갔습니다. \n", sets.client_nickName, sets.client_uid);
+			textcolor(RESET);
 			break;
 		}
 
