@@ -219,6 +219,15 @@ int client(SETTINGS sets)
 			return 1;
 		}
 
+		//1번 재생목록 삭제를 요청한다.
+		char request[50] = { "delete played list" };
+		retval = send(sock, request, (int)strlen(request) + 1, 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("1번 재생목록 삭제요청send()");
+			return 1;
+		}
+
 		//재생목록을 새로고침한다.
 		retval = refreshPlaylist(sock, playlist);
 		if (retval != 0)

@@ -210,6 +210,10 @@ DWORD WINAPI clientComm(LPVOID arg)
 			double sendBytes;
 			sendFile(sock, buffer, &sendBytes);
 		}
+		else if (strcmp(request, "delete played list") == 0)
+		{
+			deletePlaylist(1, playlist);
+		}
 	}
 
 	closesocket(sock);
