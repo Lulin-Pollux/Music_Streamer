@@ -88,7 +88,8 @@ int main()
 	{
 		printf("알 수 없는 실행모드입니다. \n");
 		printf("실행모드를 정확히 적어주세요. \n");
-		exit(1);
+		system("pause");
+		return 1;
 	}
 
 	//프로그램 종료
